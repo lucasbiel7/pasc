@@ -29,7 +29,6 @@
               <version>3.8.1</version>
               <configuration>
                 <annotationProcessorPaths>
-                  <!-- SOLUTION -->
                   <path>
                     <groupId>org.projectlombok</groupId>
                     <artifactId>lombok</artifactId>
