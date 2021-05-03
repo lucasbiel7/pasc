@@ -12,5 +12,35 @@
         <maven.compiler.source>13</maven.compiler.source>
         <maven.compiler.target>13</maven.compiler.target>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.20</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    <plugins>
+        <plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>3.7.0</version>
+              <configuration>
+                <annotationProcessorPaths>
+                  <!-- SOLUTION -->
+                  <path>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok</artifactId>
+                    <version>1.16.20</version>
+                  </path>
+                </annotationProcessorPaths>
+                <source>${maven.compiler.source}</source>
+                <target>${maven.compiler.target}</target>
+              </configuration>
+            </plugin>
+        </plugin>
+    </plugins>
     
 </project>
