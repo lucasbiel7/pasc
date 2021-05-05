@@ -1,6 +1,7 @@
-package br.com.unibh.compiler.pasc.states;
+package br.com.unibh.compiler.pasc.states.impl;
 
 import br.com.unibh.compiler.pasc.exceptions.IllegalCharacterException;
+import br.com.unibh.compiler.pasc.states.State;
 
 /**
  * @author Lucas Dutra
