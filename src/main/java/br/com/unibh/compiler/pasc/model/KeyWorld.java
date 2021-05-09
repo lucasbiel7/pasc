@@ -11,20 +11,36 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum KeyWorld {
+public enum KeyWorld implements TokenName {
 
-    PROGRAM("program"),
-    IF("if"),
-    ELSE("else"),
-    WHILE("while"),
-    WRITE("write"),
-    READ("read"),
-    NUM("num"),
-    CHAR("char"),
-    NOT("not"),
-    OR("or"),
-    AND("and");
 
-    private final String command;
+    PROGRAM(Constants.KW, "program"),
+
+    IF(Constants.KW, "if"),
+
+    ELSE(Constants.KW, "else"),
+
+    WHILE(Constants.KW, "while"),
+
+    WRITE(Constants.KW, "write"),
+
+    READ(Constants.KW, "read"),
+
+    NUM(Constants.KW, "num"),
+
+    CHAR(Constants.KW, "char"),
+
+    NOT(Constants.KW, "not"),
+
+    OR(Constants.KW, "or"),
+
+    AND(Constants.KW, "and");
+
+    private final String tokenName;
+    private final String value;
+
+    private static final class Constants {
+        private static final String KW = "KW";
+    }
 
 }
