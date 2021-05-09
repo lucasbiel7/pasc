@@ -18,7 +18,7 @@ class NumberStateTest {
     void testWhenFindANumber() {
         final char[] numberWorld = "48643".toCharArray();
         int i = 0;
-        State actualState = new InitialState();
+        State actualState = InitialState.getInstance();
         do {
             actualState = actualState.nextState(numberWorld[i++]);
         } while (i < numberWorld.length);

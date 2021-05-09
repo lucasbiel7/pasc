@@ -14,7 +14,7 @@ class EqualsStateTest {
     @DisplayName("Verificando se valida igualdade")
     void testWhenHasEqualsState() {
         final char[] equalsWorld = "==".toCharArray();
-        State actualState = new InitialState();
+        State actualState = InitialState.getInstance();
         int i = 0;
         do {
             actualState = actualState.nextState(equalsWorld[i]);
@@ -28,7 +28,7 @@ class EqualsStateTest {
     @DisplayName("Verificando se valida igualdade com espaço anterior")
     void testWhenHasEqualsStateWithSpace() {
         final char[] equalsWorld = "  ==".toCharArray();
-        State actualState = new InitialState();
+        State actualState = InitialState.getInstance();
         int i = 0;
         do {
             actualState = actualState.nextState(equalsWorld[i]);
@@ -42,7 +42,7 @@ class EqualsStateTest {
     @DisplayName("Verificando se valida igualdade com quebra de linha")
     void testWhenHasEqualsStateWithLineBreak() {
         final char[] equalsWorld = "\n==".toCharArray();
-        State actualState = new InitialState();
+        State actualState = InitialState.getInstance();
         int i = 0;
         do {
             actualState = actualState.nextState(equalsWorld[i]);
@@ -56,7 +56,7 @@ class EqualsStateTest {
     @DisplayName("Verificando se valida igualdade com quebra de linha")
     void testWhenHasEqualsStateButThrowsException() {
         final char[] equalsWorld = "\n===".toCharArray();
-        State actualState = new InitialState();
+        State actualState = InitialState.getInstance();
         int i = 0;
         do {
             actualState = actualState.nextState(equalsWorld[i]);
