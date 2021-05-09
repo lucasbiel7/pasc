@@ -16,6 +16,9 @@ public class SymbolTable {
         loadKeyWorld();
     }
 
+    /**
+     * Carrega as palavras reservadas na tabela de simbolos
+     */
     private void loadKeyWorld() {
         Arrays.stream(KeyWorld.values()).forEach(keyWorld -> getSymbols().putIfAbsent(keyWorld.getValue(), ""));
     }
