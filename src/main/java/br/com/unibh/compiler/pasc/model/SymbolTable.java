@@ -17,7 +17,7 @@ public class SymbolTable {
     }
 
     private void loadKeyWorld() {
-        Arrays.stream(KeyWorld.values()).forEach(keyWorld -> getSymbols().putIfAbsent(keyWorld.getCommand(), ""));
+        Arrays.stream(KeyWorld.values()).forEach(keyWorld -> getSymbols().putIfAbsent(keyWorld.getValue(), ""));
     }
 
 
