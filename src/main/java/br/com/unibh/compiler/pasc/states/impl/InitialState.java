@@ -15,7 +15,7 @@ public class InitialState implements State {
         if (Character.isDigit(value)) return new NumberState(value);
         return switch (value) {
             case '/' -> new BarState();
-            case '=' -> new EqualState();
+            case '=' -> new AttributionState();
             case '+', '-', '*' -> new OperatorState(value);
             default -> throw new UnsupportedOperationException("Caracter não é valido");
         };

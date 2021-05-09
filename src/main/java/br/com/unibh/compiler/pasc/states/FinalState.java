@@ -11,4 +11,7 @@ public interface FinalState extends State {
     default State nextState(char value) {
         throw new UnsupportedOperationException("Estado final não pode ler outra variável");
     }
+
+    //TODO verificar de fazer um método para gerar o token
+    
 }
