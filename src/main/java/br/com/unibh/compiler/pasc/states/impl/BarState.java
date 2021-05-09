@@ -6,7 +6,7 @@ public class BarState implements State {
     @Override
     public State nextState(char value) {
         return switch (value) {
-            case '/' -> new CommentState();
+            case '/' -> new CommentLineState();
             default -> new OperatorState(value);
         };
     }

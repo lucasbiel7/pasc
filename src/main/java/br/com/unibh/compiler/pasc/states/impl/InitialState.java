@@ -14,6 +14,7 @@ public class InitialState implements State {
     public State nextState(char value) {
         if (Character.isDigit(value)) return new NumberState(value);
         return switch (value) {
+            case ' ', '\n' -> new InitialState();
             case '/' -> new BarState();
             case '=' -> new AttributionState();
             case '+', '-', '*' -> new OperatorState(value);
