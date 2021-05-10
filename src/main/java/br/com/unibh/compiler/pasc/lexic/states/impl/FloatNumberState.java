@@ -34,4 +34,6 @@ public class FloatNumberState implements FinalState {
     public String value() {
         return value;
     }
+
+    
 }

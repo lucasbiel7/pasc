@@ -1,5 +1,6 @@
 package br.com.unibh.compiler.pasc.lexic.states.impl;
 
+import br.com.unibh.compiler.pasc.lexic.model.Symbols;
 import br.com.unibh.compiler.pasc.lexic.states.State;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class InitialState implements State {
     public State nextState(char value) {
         if (Character.isDigit(value)) return new NumberState(value);
         if (Character.isLetter(value)) return new IdentifierState(value);
+        if (Symbols.isSymbol(value)) return new SymbolState(value);
         return switch (value) {
             case ' ', '\n' -> InitialState.getInstance();
             case '/' -> new DivisionState();
