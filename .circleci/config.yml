@@ -23,7 +23,9 @@ jobs:
           name: Test
           command: mvn test
       - store_test_results:
-          path: target
+          path: target/surefire-reports
+      - store_artifacts:
+          path: target/site/jacoco/index.html
 
 
 workflows:
