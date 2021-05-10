@@ -1,5 +1,7 @@
 package br.com.unibh.compiler.pasc.service;
 
+import br.com.unibh.compiler.pasc.model.Constants;
+import br.com.unibh.compiler.pasc.model.Token;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +13,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DisplayName("Processing language resources")
 class ProcessTextTest {
@@ -26,16 +32,23 @@ class ProcessTextTest {
     @Test
     @DisplayName("Teste um programa que está nos recursos")
     void testWhenAProgramaOnResource() {
-        try (final InputStream resource = getResource("program.pasc")) {
+        try (final InputStream resource = getResource("program1.pasc")) {
             processText.process(resource);
-            
+            final List<Token> tokens = processText.tokens;
+            assertEquals(4, tokens.size());
+            final Token first = tokens.get(0);
+            assertNotNull(first);
+            assertEquals("123", first.getValue());
+            assertEquals(Constants.NUM_CONST.getTokenName(), first.getName());
+            assertEquals(1, first.getLine());
+            assertEquals(1, first.getColumn());
         }
     }
 
 
     private InputStream getResource(String name) throws URISyntaxException, IOException {
         final ClassLoader classLoader = getClass().getClassLoader();
-        final URL resource = classLoader.getResource("program.pasc");
+        final URL resource = classLoader.getResource("program1.pasc");
         Path path = Path.of(resource.toURI());
         return Files.newInputStream(path);
     }

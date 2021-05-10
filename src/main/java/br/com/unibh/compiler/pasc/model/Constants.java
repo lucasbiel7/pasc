@@ -13,11 +13,6 @@ public enum Constants implements TokenName {
     private final String tokenName;
 
     @Override
-    public String getTokenName() {
-        return null;
-    }
-
-    @Override
     public String getValue() {
         throw new UnsupportedOperationException("Constantes não possuem valor fixo!");
     }

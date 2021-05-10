@@ -25,24 +25,45 @@ public class ProcessText {
         int value;
         State actualState = InitialState.getInstance();
         FinalState lastFinalState = null;
-        int line = 0;
-        int column = 0;
+        int line = 1;
+        int column = 1;
         while ((value = data.read()) != -1) {
-            actualState = actualState.nextState((char) value);
+            char valueCasted = (char) value;
+            actualState = actualState.nextState(valueCasted);
             if (actualState instanceof FinalState finalState) {
                 lastFinalState = finalState;
             }
             if (actualState instanceof EmptyState) {
                 tokens.add(Token.builder()
-                        .column(column)
+                        .column(column - lastFinalState.value().length())
                         .line(line)
                         .value(lastFinalState.value())
                         .name(lastFinalState.name())
                         .build());
-                
-                actualState = InitialState.getInstance().nextState((char) value);
+                lastFinalState = null;
+                actualState = InitialState.getInstance().nextState(valueCasted);
+            }
+
+            column++;
+            if (valueCasted == '\n') {
+                line++;
+                column = 1;
             }
         }
+        if (lastFinalState != null) {
+            tokens.add(Token.builder()
+                    .column(column - lastFinalState.value().length())
+                    .line(line)
+                    .value(lastFinalState.value())
+                    .name(lastFinalState.name())
+                    .build());
+        }
+        tokens.add(Token.builder()
+                .column(column)
+                .line(line)
+                .value("EOF")
+                .name("EOF")
+                .build());
     }
 
 }

@@ -1,12 +1,12 @@
 package br.com.unibh.compiler.pasc.states.impl;
 
 import br.com.unibh.compiler.pasc.model.Constants;
-import br.com.unibh.compiler.pasc.states.FinalStateBeforeNext;
+import br.com.unibh.compiler.pasc.states.FinalState;
 import br.com.unibh.compiler.pasc.states.State;
 import lombok.Getter;
 
 @Getter
-public class NumberState implements FinalStateBeforeNext {
+public class NumberState implements FinalState {
 
     private final String value;
 

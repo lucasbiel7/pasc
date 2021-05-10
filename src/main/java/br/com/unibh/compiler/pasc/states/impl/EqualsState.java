@@ -12,6 +12,6 @@ public class EqualsState implements FinalState {
 
     @Override
     public String value() {
-        return Operators.OP_EQ.getTokenName();
+        return Operators.OP_EQ.getValue();
     }
 }
