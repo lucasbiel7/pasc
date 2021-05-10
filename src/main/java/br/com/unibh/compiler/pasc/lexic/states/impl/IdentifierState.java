@@ -42,6 +42,6 @@ public class IdentifierState implements FinalState {
 
     @Override
     public String value() {
-        return null;
+        return this.value;
     }
 }
