@@ -22,7 +22,7 @@ public class NumberState implements FinalStateBeforeNext {
     public State nextState(char value) {
         if (Character.isDigit(value)) return new NumberState(this, value);
         if (value == '.')
-            return new FloatNumberState(this.value, value);
+            return new PointFloatNumberState(this.value, value);
         return EmptyState.getInstance();
     }
 
