@@ -2,7 +2,9 @@ package br.com.unibh.compiler.pasc.states.impl;
 
 import br.com.unibh.compiler.pasc.states.FinalState;
 import br.com.unibh.compiler.pasc.states.State;
+import lombok.Getter;
 
+@Getter
 public class FloatNumberState implements FinalState {
 
     private String value;
