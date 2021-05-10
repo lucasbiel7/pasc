@@ -4,7 +4,6 @@ import br.com.unibh.compiler.pasc.states.State;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Teste unitário para verificar se o programa consegue alcançar o estado e igualdade")
@@ -64,7 +63,7 @@ class EqualsStateTest {
         } while (i < 3);
         final State errorState = actualState;
         assertTrue(actualState instanceof EqualsState);
-        assertThrows(UnsupportedOperationException.class, () -> errorState.nextState(equalsWorld[3]));
+        assertTrue(errorState.nextState(equalsWorld[3]) instanceof EmptyState);
     }
 
 }

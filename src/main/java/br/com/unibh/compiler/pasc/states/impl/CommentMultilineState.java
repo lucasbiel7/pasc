@@ -12,4 +12,3 @@ public class CommentMultilineState implements State {
         };
     }
 }
-/**/

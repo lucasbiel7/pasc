@@ -1,6 +1,6 @@
 package br.com.unibh.compiler.pasc.states.impl;
 
-import br.com.unibh.compiler.pasc.exceptions.IllegalCharacterException;
+import br.com.unibh.compiler.pasc.model.Operators;
 import br.com.unibh.compiler.pasc.states.FinalState;
 import br.com.unibh.compiler.pasc.states.State;
 
@@ -12,10 +12,19 @@ public class AttributionState implements FinalState {
 
     @Override
     public State nextState(char value) {
-        if (value == '=') {
-            return new EqualsState();
-        }
-        //TODO verificar caso não tenha outra estado válido retornar nulo
-        throw new IllegalCharacterException();
+        return switch (value) {
+            case '=' -> new EqualsState();
+            default -> EmptyState.getInstance();
+        };
+    }
+
+    @Override
+    public String name() {
+        return Operators.OP_ATRIB.getTokenName();
+    }
+
+    @Override
+    public String value() {
+        return Operators.OP_ATRIB.getValue();
     }
 }

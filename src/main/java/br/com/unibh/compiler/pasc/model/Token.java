@@ -7,9 +7,19 @@ import lombok.Getter;
 @Builder
 public class Token {
 
-    private String nome;
-    private String valor;
-    private int linha;
-    private int coluna;
+    private String name;
+    private String value;
+    private int line;
+    private int column;
 
+
+    @Override
+    public String toString() {
+        return "Token{" +
+                "name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                ", line=" + line +
+                ", column=" + column +
+                '}';
+    }
 }

@@ -1,5 +1,6 @@
 package br.com.unibh.compiler.pasc.states.impl;
 
+import br.com.unibh.compiler.pasc.model.Constants;
 import br.com.unibh.compiler.pasc.states.FinalStateBeforeNext;
 import br.com.unibh.compiler.pasc.states.State;
 import lombok.Getter;
@@ -22,6 +23,16 @@ public class NumberState implements FinalStateBeforeNext {
         if (Character.isDigit(value)) return new NumberState(this, value);
         if (value == '.')
             return new FloatNumberState(this.value, value);
-        return null;
+        return EmptyState.getInstance();
+    }
+
+    @Override
+    public String name() {
+        return Constants.NUM_CONST.getTokenName();
+    }
+
+    @Override
+    public String value() {
+        return value;
     }
 }
