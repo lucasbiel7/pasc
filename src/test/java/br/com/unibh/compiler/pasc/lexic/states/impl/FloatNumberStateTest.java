@@ -3,6 +3,7 @@ package br.com.unibh.compiler.pasc.lexic.states.impl;
 import br.com.unibh.compiler.pasc.lexic.exceptions.IllegalCharacterException;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
+import br.com.unibh.compiler.pasc.lexic.states.ValidateStateHelperTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,17 +14,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Teste para identificar números flutuantes através dos estados")
-class FloatNumberStateTest {
+class FloatNumberStateTest extends ValidateStateHelperTest {
     @Test
     @DisplayName("Encontrando números decimal e verificando seus valores")
     void testWhenFindNumberFloat() {
-        final char[] numberFloatWorld = "4587.25".toCharArray();
-        int i = 0;
-        State actualState = InitialState.getInstance();
-        do {
-            actualState = actualState.nextState(numberFloatWorld[i]);
-            i++;
-        } while (i < numberFloatWorld.length);
+        State actualState = runProgram("4587.25");
         assertFalse(actualState instanceof InitialState);
         assertTrue(actualState instanceof FloatNumberState);
         FloatNumberState numberStateFloat = (FloatNumberState) actualState;
@@ -34,27 +29,13 @@ class FloatNumberStateTest {
     @Test
     @DisplayName("Verificar se existe pelo menos um númeor depois do . para torna-lo flutuante")
     void testWhenNumberAfterThePeriod() {
-        final char[] numberFloatWorld = "4587.".toCharArray();
-        int i = 0;
-        State actualState = InitialState.getInstance();
-        do {
-            actualState = actualState.nextState(numberFloatWorld[i]);
-            i++;
-        } while (i < numberFloatWorld.length);
+        State actualState = runProgram("4587.");
         assertFalse(actualState instanceof FinalState);
     }
 
     @Test
     @DisplayName("Verificar se existe símbolo inválido após o ponto")
     void testWhenSymbolAfterThePeriod() {
-        final char[] numberFloatWorld = "4587.u".toCharArray();
-        assertThrows(IllegalCharacterException.class, () -> {
-            int i = 0;
-            State actualState = InitialState.getInstance();
-            do {
-                actualState = actualState.nextState(numberFloatWorld[i]);
-                i++;
-            } while (i < numberFloatWorld.length);
-        });
+        assertThrows(IllegalCharacterException.class, () -> runProgram("4587.u"));
     }
 }
