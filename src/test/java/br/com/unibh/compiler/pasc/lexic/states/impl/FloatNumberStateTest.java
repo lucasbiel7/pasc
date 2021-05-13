@@ -1,6 +1,7 @@
 package br.com.unibh.compiler.pasc.lexic.states.impl;
 
 import br.com.unibh.compiler.pasc.lexic.exceptions.IllegalCharacterException;
+import br.com.unibh.compiler.pasc.lexic.model.Constants;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
 import br.com.unibh.compiler.pasc.lexic.states.ValidateStateHelperTest;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Teste para identificar números flutuantes através dos estados")
 class FloatNumberStateTest extends ValidateStateHelperTest {
+
     @Test
     @DisplayName("Encontrando números decimal e verificando seus valores")
     void testWhenFindNumberFloat() {
@@ -22,8 +24,9 @@ class FloatNumberStateTest extends ValidateStateHelperTest {
         assertFalse(actualState instanceof InitialState);
         assertTrue(actualState instanceof FloatNumberState);
         FloatNumberState numberStateFloat = (FloatNumberState) actualState;
-        assertNotEquals("587.25", numberStateFloat.getValue());
-        assertEquals("4587.25", numberStateFloat.getValue());
+        assertNotEquals("587.25", numberStateFloat.value());
+        assertEquals("4587.25", numberStateFloat.value());
+        assertEquals(Constants.NUM_CONST.getTokenName(), numberStateFloat.name());
     }
 
     @Test

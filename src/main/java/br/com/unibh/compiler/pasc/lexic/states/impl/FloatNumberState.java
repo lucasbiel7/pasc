@@ -3,9 +3,7 @@ package br.com.unibh.compiler.pasc.lexic.states.impl;
 import br.com.unibh.compiler.pasc.lexic.model.Constants;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
-import lombok.Getter;
 
-@Getter
 public class FloatNumberState implements FinalState {
 
     private String value;
@@ -35,5 +33,5 @@ public class FloatNumberState implements FinalState {
         return value;
     }
 
-    
+
 }

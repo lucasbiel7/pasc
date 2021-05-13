@@ -1,6 +1,7 @@
 package br.com.unibh.compiler.pasc.lexic.service;
 
 import br.com.unibh.compiler.pasc.lexic.model.Constants;
+import br.com.unibh.compiler.pasc.lexic.model.Operators;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,10 +16,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@DisplayName("Processing language resources")
+@DisplayName("Processamento de códigos nos recursos")
 class ProcessTextTest {
 
     private ProcessText processText;
@@ -37,11 +39,18 @@ class ProcessTextTest {
             final List<Token> tokens = processText.tokens;
             assertEquals(4, tokens.size());
             final Token first = tokens.get(0);
-            assertNotNull(first);
-            assertEquals("123", first.getValue());
-            assertEquals(Constants.NUM_CONST.getTokenName(), first.getName());
-            assertEquals(1, first.getLine());
-            assertEquals(1, first.getColumn());
+            final Token second = tokens.get(1);
+            assertAll(
+                    () -> assertNotNull(first),
+                    () -> assertEquals("123", first.getValue()),
+                    () -> assertEquals(Constants.NUM_CONST.getTokenName(), first.getName()),
+                    () -> assertEquals(1, first.getLine()),
+                    () -> assertEquals(1, first.getColumn()),
+                    () -> assertEquals(Operators.OP_EQ.getTokenName(), second.getName()),
+                    () -> assertEquals(Operators.OP_EQ.getValue(), second.getValue()),
+                    () -> assertEquals(1, second.getLine()),
+                    () -> assertEquals(5, second.getColumn())
+            );
         }
     }
 
