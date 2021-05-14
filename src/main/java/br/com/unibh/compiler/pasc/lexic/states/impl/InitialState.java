@@ -36,6 +36,7 @@ public class InitialState implements State {
             case '/' -> new DivisionState();
             case '=' -> new AttributionState();
             case '+', '-', '*' -> new OperatorState(value);
+            case '"', '\'' -> new StringState(value);
             default -> throw new UnsupportedOperationException("Caracter não é valido");
         };
     }

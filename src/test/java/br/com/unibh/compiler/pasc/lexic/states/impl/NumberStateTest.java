@@ -28,5 +28,4 @@ class NumberStateTest {
         assertNotEquals("8643", numberState.getValue());
         assertEquals("48643", numberState.getValue());
     }
-
 }
