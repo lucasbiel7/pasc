@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class OperatorStateTest extends ValidateStateHelperTest {
 
     @Test
+    @DisplayName("Teste operadores de soma")
     void testWhenUserOperatorPlus() {
         final State state = runProgram("+");
         assertTrue(state instanceof OperatorState);
@@ -23,6 +24,7 @@ class OperatorStateTest extends ValidateStateHelperTest {
     }
 
     @Test
+    @DisplayName("Teste operadores de subtração")
     void testWhenUserOperatorMinus() {
         final State state = runProgram("-");
         assertTrue(state instanceof OperatorState);
@@ -33,6 +35,7 @@ class OperatorStateTest extends ValidateStateHelperTest {
     }
 
     @Test
+    @DisplayName("Teste operadores de multiplicação")
     void testWhenUserOperatorMulti() {
         final State state = runProgram("*");
         assertTrue(state instanceof OperatorState);
