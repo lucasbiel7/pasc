@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DisplayName("Criação de testes para validar constantes como string numero e nome de identificadores")
 class ConstantsTest {
 
-
     @Test
     @DisplayName("Ao pegar valor deve soltar uma exceção de operação não suportada")
     void testeWhenGetValueOfConstantThrowsAndException() {
