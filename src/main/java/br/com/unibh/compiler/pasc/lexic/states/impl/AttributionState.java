@@ -8,7 +8,7 @@ import br.com.unibh.compiler.pasc.lexic.states.State;
  * @author Lucas Dutra
  * @since 04 maio 2021
  */
-public class AttributionState implements FinalState {
+public record AttributionState() implements FinalState {
 
     @Override
     public State nextState(char value) {
