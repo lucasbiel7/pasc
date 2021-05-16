@@ -22,7 +22,6 @@ public class GreaterThanState implements FinalState {
             case '=' -> GreaterThanOrEqualsState.getInstance();
             default -> FinalState.super.nextState(value);
         };
-
     }
 
     @Override

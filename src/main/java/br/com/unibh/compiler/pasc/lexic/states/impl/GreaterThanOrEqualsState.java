@@ -6,11 +6,11 @@ import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import java.util.Objects;
 
 public class GreaterThanOrEqualsState implements FinalState {
-    private static GreaterThanState instance;
+    private static GreaterThanOrEqualsState instance;
 
-    public static GreaterThanState getInstance() {
+    public static GreaterThanOrEqualsState getInstance() {
         if (Objects.isNull(instance)) {
-            instance = new GreaterThanState();
+            instance = new GreaterThanOrEqualsState();
         }
         return instance;
     }
