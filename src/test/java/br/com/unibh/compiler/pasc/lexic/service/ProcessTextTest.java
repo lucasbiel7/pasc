@@ -22,9 +22,11 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Processamento de códigos nos recursos")
@@ -47,6 +49,7 @@ class ProcessTextTest {
             assertEquals(4, tokens.size());
             final Token first = tokens.get(0);
             final Token second = tokens.get(1);
+            //TODO melhorar os testes com os privates metodos criados
             assertAll(
                     () -> assertNotNull(first),
                     () -> assertEquals("123", first.getValue()),
@@ -81,10 +84,10 @@ class ProcessTextTest {
     @SneakyThrows
     @Test
     @DisplayName("Testando o panic mode configurado")
-    void testWhenProgramFails() {
+    void testWhenProgramFailsButPanicSaveTheState() {
         try (final InputStream resource = getResource("program3.pasc")) {
             processText.process(resource);
-            final List<Token> tokens = processText.tokens;
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.tokens);
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(11, tokens.size());
@@ -102,6 +105,16 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(9), 4, 1, "}", Symbols.SMB_CBC.getTokenName()),
                     () -> assertToken(tokens.get(10), 4, 2, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
             );
+        }
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Verificando se o programa para a execução com a quantidade de erros configurada no panic mode")
+    void testWhenPanicRetryExceeded() {
+        try (final InputStream resource = getResource("program4.pasc")) {
+            assertThrows(RuntimeException.class, () -> processText.process(resource));
+            assertEquals(PanicModeConfig.RETRY, processText.tokens.size());
         }
     }
 

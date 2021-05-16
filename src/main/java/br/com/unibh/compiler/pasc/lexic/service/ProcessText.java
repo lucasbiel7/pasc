@@ -91,7 +91,7 @@ public class ProcessText {
     }
 
     private void validateStopProgram(int erros) {
-        if (erros > PanicModeConfig.RETRY) {
+        if (erros >= PanicModeConfig.RETRY) {
             throw new RuntimeException("O programa não pode continuar, número máximos de erros seguidos obtido!");
         }
     }
