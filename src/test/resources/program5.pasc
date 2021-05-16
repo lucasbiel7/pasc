@@ -1,0 +1,4 @@
+/*
+Teste comentário multiplas linhas e teste operador diferente !=
+*/
+5!=4 //EOF sempre será contado como um token no final do aquivo
