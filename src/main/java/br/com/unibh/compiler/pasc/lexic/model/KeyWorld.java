@@ -14,27 +14,27 @@ import lombok.Getter;
 public enum KeyWorld implements TokenName {
 
 
-    PROGRAM(Constants.KW, "program"),
+    PROGRAM(Constants.KW + "_PROGRAM", "program"),
 
-    IF(Constants.KW, "if"),
+    IF(Constants.KW + "_IF", "if"),
 
-    ELSE(Constants.KW, "else"),
+    ELSE(Constants.KW + "_ELSE", "else"),
 
-    WHILE(Constants.KW, "while"),
+    WHILE(Constants.KW + "_WHILE", "while"),
 
-    WRITE(Constants.KW, "write"),
+    WRITE(Constants.KW + "_WRITE", "write"),
 
-    READ(Constants.KW, "read"),
+    READ(Constants.KW + "_READ", "read"),
 
-    NUM(Constants.KW, "num"),
+    NUM(Constants.KW + "_NUM", "num"),
 
-    CHAR(Constants.KW, "char"),
+    CHAR(Constants.KW + "_CHAR", "char"),
 
-    NOT(Constants.KW, "not"),
+    NOT(Constants.KW + "_NOT", "not"),
 
-    OR(Constants.KW, "or"),
+    OR(Constants.KW + "_OR", "or"),
 
-    AND(Constants.KW, "and");
+    AND(Constants.KW + "_AND", "and");
 
     private final String tokenName;
     private final String value;
