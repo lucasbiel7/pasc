@@ -9,6 +9,7 @@ import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
 import br.com.unibh.compiler.pasc.lexic.states.impl.EmptyState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.InitialState;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,9 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Getter
 public class ProcessText {
 
-    List<Token> tokens;
+    private List<Token> tokens;
 
     public ProcessText() {
         tokens = new ArrayList<>();

@@ -45,7 +45,7 @@ class ProcessTextTest {
     void testWhenAProgramaOnResource() {
         try (final InputStream resource = getResource("program1.pasc")) {
             processText.process(resource);
-            final List<Token> tokens = processText.tokens;
+            final List<Token> tokens = processText.getTokens();
             assertEquals(4, tokens.size());
             final Token first = tokens.get(0);
             final Token second = tokens.get(1);
@@ -70,7 +70,7 @@ class ProcessTextTest {
     void testWhenAProgramaOnResourceWithCommentLine() {
         try (final InputStream resource = getResource("program2.pasc")) {
             processText.process(resource);
-            final List<Token> tokens = processText.tokens;
+            final List<Token> tokens = processText.getTokens();
             assertEquals(4, tokens.size());
             final Token first = tokens.get(0);
             assertNotNull(first);
@@ -86,8 +86,8 @@ class ProcessTextTest {
     @DisplayName("Testando o panic mode configurado")
     void testWhenProgramFailsButPanicSaveTheState() {
         try (final InputStream resource = getResource("program3.pasc")) {
-            processText.process(resource);
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.tokens);
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(11, tokens.size());
@@ -114,7 +114,7 @@ class ProcessTextTest {
     void testWhenPanicRetryExceeded() {
         try (final InputStream resource = getResource("program4.pasc")) {
             assertThrows(RuntimeException.class, () -> processText.process(resource));
-            assertEquals(PanicModeConfig.RETRY, processText.tokens.size());
+            assertEquals(PanicModeConfig.RETRY, processText.getTokens().size());
         }
     }
 

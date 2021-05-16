@@ -16,7 +16,7 @@ public class LanguageLexer {
 
     @Getter
     @Setter
-    private static Locale defaultLocale = Locale.ROOT;
+    private static Locale defaultLocale = Locale.getDefault();
 
 
     public static LanguageLexer getInstance() {
