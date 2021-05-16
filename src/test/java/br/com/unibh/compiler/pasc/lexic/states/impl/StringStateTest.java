@@ -28,5 +28,11 @@ class StringStateTest extends ValidateStateHelperTest {
             assertEquals("CHAR_CONST", closedStringState.name());
         }
     }
+//    @DisplayName("Teste lendo uma String simples sem fechar \'")
+//    @Test
+//    void testWhenFindIdentifierWithSymbol(){
+//        assertThrows(UnsupportedOperationException.class,() -> runProgram("'Palavra"));
+//
+//    }
 
 }
