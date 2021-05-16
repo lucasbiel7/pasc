@@ -9,16 +9,17 @@ import java.util.Objects;
 public class GreaterThanState implements FinalState {
     private static GreaterThanState instance;
 
-    public static  GreaterThanState getInstance(){
-        if(Objects.isNull(instance)){
+    public static GreaterThanState getInstance() {
+        if (Objects.isNull(instance)) {
             instance = new GreaterThanState();
         }
         return instance;
     }
+
     @Override
     public State nextState(char value) {
-        return switch (value){
-            case '=' -> GreaterThanOrEquals.getInstance();
+        return switch (value) {
+            case '=' -> GreaterThanOrEqualsState.getInstance();
             default -> FinalState.super.nextState(value);
         };
 

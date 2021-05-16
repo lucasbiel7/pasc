@@ -33,7 +33,7 @@ public class InitialState implements State {
         if (Character.isLetter(value)) return new IdentifierState(value);
         if (Symbols.isSymbol(value)) return new SymbolState(value);
         return switch (value) {
-            case ' ', '\n' -> InitialState.getInstance();
+            case ' ', '\n', '\r' -> InitialState.getInstance();
             case '/' -> DivisionState.getInstance();
             case '=' -> AttributionState.getInstance();
             case '+', '-', '*' -> new OperatorState(value);

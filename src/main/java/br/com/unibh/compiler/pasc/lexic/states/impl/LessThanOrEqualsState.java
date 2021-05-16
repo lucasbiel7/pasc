@@ -9,13 +9,13 @@ import java.util.Objects;
 
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class LessThanOrEquals implements FinalState {
+public class LessThanOrEqualsState implements FinalState {
 
-    private static LessThanOrEquals instance;
+    private static LessThanOrEqualsState instance;
 
-    public static LessThanOrEquals getInstance() {
+    public static LessThanOrEqualsState getInstance() {
         if (Objects.isNull(instance)) {
-            instance = new LessThanOrEquals();
+            instance = new LessThanOrEqualsState();
         }
         return instance;
     }
