@@ -22,7 +22,7 @@ public class LessThanState implements FinalState {
     @Override
     public State nextState(char value) {
         return switch (value) {
-            case '=' -> LessThanOrEquals.getInstance();
+            case '=' -> LessThanOrEqualsState.getInstance();
             default -> FinalState.super.nextState(value);
         };
     }

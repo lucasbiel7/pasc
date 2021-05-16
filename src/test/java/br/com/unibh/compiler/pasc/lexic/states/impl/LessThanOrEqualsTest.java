@@ -18,7 +18,7 @@ class LessThanOrEqualsTest {
             i++;
         } while (i < lessEqualWorld.length);
 
-        assertTrue(actualState instanceof LessThanOrEquals);
+        assertTrue(actualState instanceof LessThanOrEqualsState);
     }
 
 }

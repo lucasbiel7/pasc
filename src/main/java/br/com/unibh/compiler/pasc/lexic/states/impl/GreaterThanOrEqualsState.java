@@ -2,11 +2,10 @@ package br.com.unibh.compiler.pasc.lexic.states.impl;
 
 import br.com.unibh.compiler.pasc.lexic.model.Operators;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
-import br.com.unibh.compiler.pasc.lexic.states.State;
 
 import java.util.Objects;
 
-public class GreaterThanState implements FinalState {
+public class GreaterThanOrEqualsState implements FinalState {
     private static GreaterThanState instance;
 
     public static GreaterThanState getInstance() {
@@ -17,21 +16,12 @@ public class GreaterThanState implements FinalState {
     }
 
     @Override
-    public State nextState(char value) {
-        return switch (value) {
-            case '=' -> GreaterThanOrEqualsState.getInstance();
-            default -> FinalState.super.nextState(value);
-        };
-
-    }
-
-    @Override
     public String name() {
-        return Operators.OP_GT.getTokenName();
+        return Operators.OP_GE.getTokenName();
     }
 
     @Override
     public String value() {
-        return Operators.OP_GT.getValue();
+        return Operators.OP_GE.getValue();
     }
 }
