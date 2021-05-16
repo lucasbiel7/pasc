@@ -40,6 +40,7 @@ public class InitialState implements State {
             case '"', '\'' -> new StringState(value);
             case '<' -> LessThanState.getInstance();
             case '>' -> GreaterThanState.getInstance();
+            case '!' -> NotOperatorState.getInstance();
             default -> throw new UnexpectedSymbolException("MSG001", value);
         };
     }
