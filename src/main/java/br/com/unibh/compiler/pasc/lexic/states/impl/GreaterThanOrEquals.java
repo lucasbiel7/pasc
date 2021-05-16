@@ -3,9 +3,11 @@ package br.com.unibh.compiler.pasc.lexic.states.impl;
 import br.com.unibh.compiler.pasc.lexic.model.Operators;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GreaterThanOrEquals implements FinalState {
     private static GreaterThanState instance;
 
