@@ -1,5 +1,6 @@
 package br.com.unibh.compiler.pasc.lexic.states.impl;
 
+import br.com.unibh.compiler.pasc.lexic.exceptions.UnexpectedSymbolException;
 import br.com.unibh.compiler.pasc.lexic.model.Symbols;
 import br.com.unibh.compiler.pasc.lexic.states.State;
 import lombok.AccessLevel;
@@ -33,11 +34,11 @@ public class InitialState implements State {
         if (Symbols.isSymbol(value)) return new SymbolState(value);
         return switch (value) {
             case ' ', '\n' -> InitialState.getInstance();
-            case '/' -> new DivisionState();
-            case '=' -> new AttributionState();
+            case '/' -> DivisionState.getInstance();
+            case '=' -> AttributionState.getInstance();
             case '+', '-', '*' -> new OperatorState(value);
             case '"', '\'' -> new StringState(value);
-            default -> throw new UnsupportedOperationException("Caracter não é valido");
+            default -> throw new UnexpectedSymbolException("MSG001", value);
         };
     }
 }
