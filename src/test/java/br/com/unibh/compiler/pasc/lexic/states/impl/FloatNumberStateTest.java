@@ -30,7 +30,7 @@ class FloatNumberStateTest extends ValidateStateHelperTest {
     }
 
     @Test
-    @DisplayName("Verificar se existe pelo menos um númeor depois do . para torna-lo flutuante")
+    @DisplayName("Verificar se existe pelo menos um número depois do . para torna-lo flutuante")
     void testWhenNumberAfterThePeriod() {
         State actualState = runProgram("4587.");
         assertFalse(actualState instanceof FinalState);
