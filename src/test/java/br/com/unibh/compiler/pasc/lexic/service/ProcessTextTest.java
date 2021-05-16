@@ -144,11 +144,12 @@ class ProcessTextTest {
         Path path = Path.of(resource.toURI());
         return Files.newInputStream(path);
     }
+
     @SneakyThrows
     @Test
     @DisplayName("Teste um programa que está nos recursos")
-    void testWhenProgramDiferetOperator(){
-        try (final InputStream resource = getResource("program5.pasc")){
+    void testWhenProgramNotEqualsOperator() {
+        try (final InputStream resource = getResource("program5.pasc")) {
             assertDoesNotThrow(() -> processText.process(resource));
             final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
             assertNotNull(tokens);
@@ -158,12 +159,11 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(0), 4, 1, "5", Constants.NUM_CONST.getTokenName()),
                     () -> assertToken(tokens.get(1), 4, 2, "!=", Operators.OP_NE.getTokenName()),
                     () -> assertToken(tokens.get(2), 4, 4, "4", Constants.NUM_CONST.getTokenName()),
-                    () -> assertToken(tokens.get(3), 4, 64, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+                    () -> assertToken(tokens.get(3), 4, 65, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
             );
 
         }
     }
-
 
 
 }

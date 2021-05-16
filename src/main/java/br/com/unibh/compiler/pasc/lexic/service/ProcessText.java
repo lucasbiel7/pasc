@@ -7,6 +7,7 @@ import br.com.unibh.compiler.pasc.lexic.model.TokeError;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
+import br.com.unibh.compiler.pasc.lexic.states.impl.CommentLineState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.EmptyState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.InitialState;
 import lombok.Getter;
@@ -41,20 +42,19 @@ public class ProcessText {
                 if (actualState instanceof FinalState finalState) {
                     lastFinalState = finalState;
                 } else if (actualState instanceof EmptyState) {
-                    tokens.add(Token.builder()
-                            .column(column - lastFinalState.value().length())
-                            .line(line)
-                            .value(lastFinalState.value())
-                            .name(lastFinalState.name())
-                            .build());
+                    addFinalStateToTokens(
+                            line, column - lastFinalState.value().length(),
+                            lastFinalState.value(), lastFinalState.name());
                     lastFinalState = null;
+                    erros = 0;
                     actualState = InitialState.getInstance();
                     actualState = actualState.nextState(valueCasted);
+                    if (actualState instanceof FinalState finalState) {
+                        lastFinalState = finalState;
+                    }
                 } else {
                     lastFinalState = null;
                 }
-                // TODO validar se esse erro pode fica aqui
-                erros = 0;
             } catch (UnexpectedSymbolException e) {
                 erros++;
                 addingErrorToken(line, column, e.getMessage());
@@ -67,16 +67,25 @@ public class ProcessText {
                 }
             }
         }
-        // TODO validar erros aqui
+        // TODO validar erros aqui 123.
         if (lastFinalState != null) {
-            tokens.add(Token.builder()
-                    .column(column - lastFinalState.value().length())
-                    .line(line)
-                    .value(lastFinalState.value())
-                    .name(lastFinalState.name())
-                    .build());
+            addFinalStateToTokens(line, column - lastFinalState.value().length(), lastFinalState.value(), lastFinalState.name());
+        } else {
+            if (!(actualState instanceof InitialState || actualState instanceof CommentLineState)) {
+                //ERRO de estado não finalizado
+                addingErrorToken(line, column, actualState.messageError());
+            }
         }
         eofToken(line, column);
+    }
+
+    private void addFinalStateToTokens(int line, int column, String value, String name) {
+        tokens.add(Token.builder()
+                .column(column)
+                .line(line)
+                .value(value)
+                .name(name)
+                .build());
     }
 
     private void addingErrorToken(int line, int column, String message) {
@@ -97,5 +106,4 @@ public class ProcessText {
             throw new RuntimeException("O programa não pode continuar, número máximos de erros seguidos obtido!");
         }
     }
-
 }

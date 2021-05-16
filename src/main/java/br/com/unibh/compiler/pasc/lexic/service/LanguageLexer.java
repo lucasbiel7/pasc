@@ -34,11 +34,6 @@ public class LanguageLexer {
     }
 
     @SafeVarargs
-    public final String message(Locale locale, String messageCode, Object... args) {
-        return MessageFormat.format(getMessages(locale).getString(messageCode), args);
-    }
-
-    @SafeVarargs
     public final String message(String messageCode, Object... args) {
         return MessageFormat.format(getMessages(defaultLocale).getString(messageCode), args);
     }

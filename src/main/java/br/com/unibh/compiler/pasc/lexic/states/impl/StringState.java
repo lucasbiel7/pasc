@@ -1,6 +1,7 @@
 package br.com.unibh.compiler.pasc.lexic.states.impl;
 
 import br.com.unibh.compiler.pasc.lexic.exceptions.UnexpectedSymbolException;
+import br.com.unibh.compiler.pasc.lexic.service.LanguageLexer;
 import br.com.unibh.compiler.pasc.lexic.states.State;
 
 /**
@@ -33,5 +34,10 @@ public class StringState implements State {
             return this;
         }
         throw new UnexpectedSymbolException("MSG003", value);
+    }
+
+    @Override
+    public String messageError() {
+        return LanguageLexer.getInstance().message("MSG007", delimiter);
     }
 }
