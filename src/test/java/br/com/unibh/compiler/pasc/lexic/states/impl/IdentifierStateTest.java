@@ -5,6 +5,10 @@ import br.com.unibh.compiler.pasc.lexic.states.State;
 import br.com.unibh.compiler.pasc.lexic.states.ValidateStateHelperTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,6 +35,54 @@ class IdentifierStateTest extends ValidateStateHelperTest {
         if (state instanceof IdentifierState identifierState) {
             assertEquals("var", identifierState.value());
             assertEquals("ID", identifierState.name());
+        }
+    }
+
+    @DisplayName("Testando todas as palavras reservadas")
+    @ParameterizedTest(name = "keyword")
+    @EnumSource(value = KeyWorld.class, names = {
+            "PROGRAM",
+            "IF",
+            "ELSE",
+            "WHILE",
+            "WRITE",
+            "READ",
+            "NUM",
+            "CHAR",
+            "NOT",
+            "OR",
+            "AND"
+    })
+    void testWhenUseAllKeyWorlds(KeyWorld keyWorld) {
+        State state = runProgram(keyWorld.getValue());
+        assertTrue(state instanceof IdentifierState);
+        if (state instanceof IdentifierState identifierState) {
+            assertEquals(keyWorld.getValue(), identifierState.value());
+            assertEquals(keyWorld.getTokenName(), identifierState.name());
+        }
+    }
+
+    @DisplayName("Testando todas as palavras reservadas")
+    @ParameterizedTest(name = "keyword")
+    @EnumSource(value = KeyWorld.class, names = {
+            "PROGRAM",
+            "IF",
+            "ELSE",
+            "WHILE",
+            "WRITE",
+            "READ",
+            "NUM",
+            "CHAR",
+            "NOT",
+            "OR",
+            "AND"
+    })
+    void testWhenUseAllKeyWorldsUpperCase(KeyWorld keyWorld) {
+        State state = runProgram(keyWorld.getValue().toUpperCase(Locale.ROOT));
+        assertTrue(state instanceof IdentifierState);
+        if (state instanceof IdentifierState identifierState) {
+            assertEquals(keyWorld.getValue().toUpperCase(Locale.ROOT), identifierState.value());
+            assertEquals(keyWorld.getTokenName(), identifierState.name());
         }
     }
 
