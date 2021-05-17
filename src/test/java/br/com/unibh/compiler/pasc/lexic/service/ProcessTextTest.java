@@ -8,6 +8,7 @@ import br.com.unibh.compiler.pasc.lexic.model.Operators;
 import br.com.unibh.compiler.pasc.lexic.model.Symbols;
 import br.com.unibh.compiler.pasc.lexic.model.TokeError;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
+import br.com.unibh.compiler.pasc.lexic.model.TokenName;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -128,12 +129,32 @@ class ProcessTextTest {
         );
     }
 
+    private void assertToken(final Token assertToken, int line, int column, String value, TokenName tokenName) {
+        assertAll(
+                () -> assertNotNull(assertToken),
+                () -> assertEquals(line, assertToken.getLine()),
+                () -> assertEquals(column, assertToken.getColumn()),
+                () -> assertEquals(value, assertToken.getValue()),
+                () -> assertEquals(tokenName.getTokenName(), assertToken.getName())
+        );
+    }
+
     private void assertTokenError(final Token assertToken, int line, int column, String tokenName) {
         assertAll(
                 () -> assertNotNull(assertToken),
                 () -> assertEquals(line, assertToken.getLine()),
                 () -> assertEquals(column, assertToken.getColumn()),
                 () -> assertEquals(tokenName, assertToken.getName()),
+                () -> assertTrue(assertToken instanceof TokeError)
+        );
+    }
+
+    private void assertTokenError(final Token assertToken, int line, int column, TokenName tokenEnum) {
+        assertAll(
+                () -> assertNotNull(assertToken),
+                () -> assertEquals(line, assertToken.getLine()),
+                () -> assertEquals(column, assertToken.getColumn()),
+                () -> assertEquals(tokenEnum.getTokenName(), assertToken.getName()),
                 () -> assertTrue(assertToken instanceof TokeError)
         );
     }
@@ -178,6 +199,43 @@ class ProcessTextTest {
             assertAll(
                     () -> assertToken(tokens.get(0), 1, 31, "A String deve ser fechada com \"", PanicModeConfig.TOKEN_ERROR_NAME),
                     () -> assertToken(tokens.get(1), 1, 31, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+            );
+        }
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Teste um programa que irá imprimir o maior número")
+    void testWhenCompileAGreaterNumberProgram() {
+        try (final InputStream resource = getResource("program8.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+            assertEquals(16, tokens.size());
+            assertAll(
+                    () -> assertToken(tokens.get(0), 1, 1, "if", KeyWorld.IF.getTokenName()),
+                    () -> assertToken(tokens.get(1), 1, 3, "(", Symbols.SMB_OPA.getTokenName()),
+                    () -> assertToken(tokens.get(2), 1, 4, "a", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(3), 1, 6, ">=", Operators.OP_GE.getTokenName()),
+                    () -> assertToken(tokens.get(4), 1, 9, "b", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(5), 1, 10, ")", Symbols.SMB_CPA.getTokenName()),
+                    () -> assertToken(tokens.get(6), 1, 11, "{", Symbols.SMB_OBC),
+
+                    () -> assertToken(tokens.get(7), 2, 5, "write", KeyWorld.WRITE),
+                    () -> assertToken(tokens.get(8), 2, 11, "a", Constants.IDENTIFIER),
+
+                    () -> assertToken(tokens.get(9), 3, 1, "}", Symbols.SMB_CBC),
+                    () -> assertToken(tokens.get(10), 3, 2, "else", KeyWorld.ELSE),
+                    () -> assertToken(tokens.get(11), 3, 6, "{", Symbols.SMB_OBC),
+
+                    () -> assertToken(tokens.get(12), 4, 4, "write", KeyWorld.WRITE),
+                    () -> assertToken(tokens.get(13), 4, 11, "b", Constants.IDENTIFIER),
+
+                    () -> assertToken(tokens.get(14), 5, 1, "}", Symbols.SMB_CBC),
+
+
+                    () -> assertToken(tokens.get(15), 5, 2, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
             );
         }
     }
