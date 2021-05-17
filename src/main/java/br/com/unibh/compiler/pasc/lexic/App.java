@@ -15,6 +15,8 @@ import java.util.Locale;
 @Log
 public class App {
 
+    public static final String MARKED_STRING = " *************** ";
+
     @SneakyThrows
     public static void main(String[] args) {
         LanguageLexer.setDefaultLocale(Locale.forLanguageTag("pt-BR"));
@@ -23,7 +25,12 @@ public class App {
             try (final InputStream inputStream = Files.newInputStream(file)) {
                 ProcessText processText = new ProcessText();
                 processText.process(inputStream);
+                log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG008") + MARKED_STRING);
                 processText.getTokens().stream().forEach(App::showToken);
+                log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG009") + MARKED_STRING);
+                processText.getSymbolTable()
+                        .stream()
+                        .forEach(o -> log.info(String.format("%s -> %s", o.getLeft(), o.getRight())));
             }
         } else {
             log.severe(LanguageLexer.getInstance().message("MSG004"));
@@ -32,9 +39,9 @@ public class App {
 
     private static void showToken(Token token) {
         if (token instanceof TokeError) {
-            System.out.println(String.valueOf(token));
+            log.severe(String.valueOf(token));
         } else {
-            System.out.println(token);
+            log.info(String.valueOf(token));
         }
     }
 }

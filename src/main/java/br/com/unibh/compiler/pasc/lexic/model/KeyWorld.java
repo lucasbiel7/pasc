@@ -3,6 +3,13 @@ package br.com.unibh.compiler.pasc.lexic.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.function.Function.identity;
+
 /**
  * Palavras reservadas da linguagem
  *
@@ -41,6 +48,22 @@ public enum KeyWorld implements TokenName {
 
     private static final class Constants {
         private static final String KW = "KW";
+    }
+
+    private static final class CacheKeyWorld {
+        private static Map<String, TokenName> tokens;
+
+        static {
+            tokens = Arrays.stream(KeyWorld.values()).collect(Collectors.toMap(KeyWorld::getValue, identity()));
+        }
+    }
+
+    public static boolean isKeyWord(String value) {
+        return CacheKeyWorld.tokens.containsKey(value);
+    }
+
+    public static Optional<TokenName> getKeyWorld(String value) {
+        return Optional.ofNullable(CacheKeyWorld.tokens.get(value));
     }
 
 }

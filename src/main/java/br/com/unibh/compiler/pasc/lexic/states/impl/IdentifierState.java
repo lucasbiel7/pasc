@@ -2,12 +2,8 @@ package br.com.unibh.compiler.pasc.lexic.states.impl;
 
 import br.com.unibh.compiler.pasc.lexic.model.Constants;
 import br.com.unibh.compiler.pasc.lexic.model.KeyWorld;
-import br.com.unibh.compiler.pasc.lexic.model.TokenName;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 public class IdentifierState implements FinalState {
 
@@ -30,13 +26,8 @@ public class IdentifierState implements FinalState {
 
     @Override
     public String name() {
-        final Optional<TokenName> searchTokenName = Arrays.stream(KeyWorld.values())
-                .filter(keyWorld -> keyWorld.getValue().equals(value))
-                .map(TokenName.class::cast)
-                .findFirst();
-        TokenName tokenId = Constants.IDENTIFIER;
-        return searchTokenName
-                .orElse(tokenId)
+        return KeyWorld.getKeyWorld(this.value)
+                .orElse(Constants.IDENTIFIER)
                 .getTokenName();
     }
 

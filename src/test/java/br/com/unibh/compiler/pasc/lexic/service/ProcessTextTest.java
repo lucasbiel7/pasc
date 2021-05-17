@@ -214,7 +214,26 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(36), 10, 51, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
             );
 
+
         }
     }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Teste um programa que está nos recursos")
+    void testWhenUnclosedString() {
+        try (final InputStream resource = getResource("program6.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+            assertEquals(2, tokens.size());
+            assertAll(
+                    () -> assertToken(tokens.get(0), 1, 31, "A String deve ser fechada com \"", PanicModeConfig.TOKEN_ERROR_NAME),
+                    () -> assertToken(tokens.get(1), 1, 31, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+            );
+        }
+    }
+
 
 }
