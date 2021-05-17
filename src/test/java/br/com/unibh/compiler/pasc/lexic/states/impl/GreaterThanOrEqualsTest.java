@@ -17,8 +17,8 @@ class GreaterThanOrEqualsTest extends ValidateStateHelperTest {
         State state = runProgram(">=");
         assertTrue(state instanceof GreaterThanOrEqualsState);
         if (state instanceof GreaterThanOrEqualsState greaterThanOrEqualsState) {
-            assertEquals(Operators.OP_GT.getValue(), greaterThanOrEqualsState.value());
-            assertEquals(Operators.OP_GT.getTokenName(), greaterThanOrEqualsState.name());
+            assertEquals(Operators.OP_GE.getValue(), greaterThanOrEqualsState.value());
+            assertEquals(Operators.OP_GE.getTokenName(), greaterThanOrEqualsState.name());
         }
     }
 
