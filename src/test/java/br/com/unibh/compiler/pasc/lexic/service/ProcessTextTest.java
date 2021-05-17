@@ -180,7 +180,7 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(0), 4, 1, "5", Constants.NUM_CONST.getTokenName()),
                     () -> assertToken(tokens.get(1), 4, 2, "!=", Operators.OP_NE.getTokenName()),
                     () -> assertToken(tokens.get(2), 4, 4, "4", Constants.NUM_CONST.getTokenName()),
-                    () -> assertToken(tokens.get(3), 4, 65, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+                    () -> assertToken(tokens.get(3), 4, 64, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
             );
 
         }
@@ -294,5 +294,43 @@ class ProcessTextTest {
         }
     }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("Teste um programa que validar caracteres que não são ASCII na string")
+    void testWhenCompileANonAsciiCharacter() {
+        try (final InputStream resource = getResource("program9.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+            assertEquals(3, tokens.size());
+            assertAll(
+                    () -> assertTokenError(tokens.get(0), 1, 2, PanicModeConfig.TOKEN_ERROR_NAME),
+                    () -> assertToken(tokens.get(1), 1, 1, "", Constants.CHAR_CONST),
+                    () -> assertToken(tokens.get(2), 1, 4, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+            );
+        }
+    }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("Teste para validar aceitação de palavras reservas e identificadores tao em maiusculo quanto minusculo")
+    void testWhenUseCapsWorlds() {
+        try (final InputStream resource = getResource("program10.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+            assertEquals(7, tokens.size());
+            assertAll(
+                    () -> assertToken(tokens.get(0), 1, 1, "IF", KeyWorld.IF),
+                    () -> assertToken(tokens.get(1), 1, 4, "(", Symbols.SMB_OPA),
+                    () -> assertToken(tokens.get(2), 1, 5, "A", Constants.IDENTIFIER),
+                    () -> assertToken(tokens.get(3), 1, 7, ">", Operators.OP_GT),
+                    () -> assertToken(tokens.get(4), 1, 9, "a", Constants.IDENTIFIER),
+                    () -> assertToken(tokens.get(5), 1, 10, ")", Symbols.SMB_CPA),
+                    () -> assertToken(tokens.get(6), 1, 11, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+            );
+        }
+    }
 }

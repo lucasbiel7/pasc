@@ -26,7 +26,7 @@ public class IdentifierState implements FinalState {
 
     @Override
     public String name() {
-        return KeyWorld.getKeyWorld(this.value)
+        return KeyWorld.getKeyWorld(this.value.toLowerCase())
                 .orElse(Constants.IDENTIFIER)
                 .getTokenName();
     }

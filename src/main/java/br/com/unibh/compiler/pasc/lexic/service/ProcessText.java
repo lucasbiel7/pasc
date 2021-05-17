@@ -8,15 +8,17 @@ import br.com.unibh.compiler.pasc.lexic.model.TokeError;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
-import br.com.unibh.compiler.pasc.lexic.states.impl.ClosedStringState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.CommentLineState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.EmptyState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.IdentifierState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.InitialState;
 import lombok.Getter;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,69 +34,69 @@ public class ProcessText {
         symbolTable = new SymbolTable();
     }
 
-
     public void process(InputStream data) throws IOException {
         int value;
         State actualState = InitialState.getInstance();
         FinalState lastFinalState = null;
         int line = 1;
-        int column = 1;
+        int actualColumn = 1;
         int erros = 0;
-        while ((value = data.read()) != -1) {
-            char valueCasted = (char) value;
-            try {
-                actualState = actualState.nextState(valueCasted);
-                if (actualState instanceof FinalState finalState) {
-                    lastFinalState = finalState;
-                } else if (actualState instanceof EmptyState) {
-                    addFinalStateToTokens(
-                            line, calculateCollumn(column, lastFinalState),
-                            lastFinalState.value(), lastFinalState.name());
-                    verifyToTableSymbol(lastFinalState);
-                    lastFinalState = null;
-                    erros = 0;
-                    actualState = InitialState.getInstance();
+        int startColumn = 1;
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(data, StandardCharsets.UTF_8))) {
+            while ((value = bufferedReader.read()) != -1) {
+                char valueCasted = (char) value;
+                try {
+                    if (actualState instanceof InitialState) {
+                        startColumn = actualColumn;
+                    }
                     actualState = actualState.nextState(valueCasted);
+
                     if (actualState instanceof FinalState finalState) {
                         lastFinalState = finalState;
+                    } else if (actualState instanceof EmptyState) {
+                        addFinalStateToTokens(
+                                line, startColumn,
+                                lastFinalState.value(), lastFinalState.name());
+                        verifyToTableSymbol(lastFinalState);
+                        lastFinalState = null;
+                        erros = 0;
+                        actualState = InitialState.getInstance();
+                        startColumn = actualColumn;
+                        actualState = actualState.nextState(valueCasted);
+                        if (actualState instanceof FinalState finalState) {
+                            lastFinalState = finalState;
+                        }
+                    } else {
+                        lastFinalState = null;
                     }
-                } else {
-                    lastFinalState = null;
-                }
-            } catch (UnexpectedSymbolException e) {
-                erros++;
-                addingErrorToken(line, column, e.getMessage());
-                validateStopProgram(erros);
-            } finally {
-                column++;
-                if (valueCasted == '\n') {
-                    line++;
-                    column = 1;
+                } catch (UnexpectedSymbolException e) {
+                    erros++;
+                    addingErrorToken(line, actualColumn, e.getMessage());
+                    validateStopProgram(erros);
+                } finally {
+                    actualColumn++;
+                    if (valueCasted == '\n') {
+                        line++;
+                        actualColumn = 1;
+                    }
                 }
             }
-        }
-        // TODO validar erros aqui 123.
-        if (lastFinalState != null) {
-            addFinalStateToTokens(line, column - lastFinalState.value().length(), lastFinalState.value(), lastFinalState.name());
-        } else {
-            if (!(actualState instanceof InitialState || actualState instanceof CommentLineState)) {
-                //ERRO de estado não finalizado
-                addingErrorToken(line, column, actualState.messageError());
+            // TODO validar erros aqui 123.
+            if (lastFinalState != null) {
+                addFinalStateToTokens(line, startColumn, lastFinalState.value(), lastFinalState.name());
+            } else {
+                if (!(actualState instanceof InitialState || actualState instanceof CommentLineState)) {
+                    //ERRO de estado não finalizado
+                    addingErrorToken(line, actualColumn, actualState.messageError());
+                }
             }
+            eofToken(line, actualColumn);
         }
-        eofToken(line, column);
-    }
-
-    private int calculateCollumn(int column, FinalState finalState){
-        if(finalState instanceof ClosedStringState){
-            return column - finalState.value().length() - 2;
-        }
-        return column - finalState.value().length();
     }
 
     private void verifyToTableSymbol(FinalState lastFinalState) {
         if (lastFinalState instanceof IdentifierState identifierState) {
-            symbolTable.add(identifierState.value());
+            symbolTable.add(identifierState.value().toLowerCase());
         }
     }
 
