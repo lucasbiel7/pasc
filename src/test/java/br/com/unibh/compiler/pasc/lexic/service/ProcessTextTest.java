@@ -185,6 +185,7 @@ class ProcessTextTest {
 
         }
     }
+
     @SneakyThrows
     @Test
     @DisplayName("Teste um programa Operações entre dois números")
@@ -282,7 +283,7 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(10), 3, 2, "else", KeyWorld.ELSE),
                     () -> assertToken(tokens.get(11), 3, 6, "{", Symbols.SMB_OBC),
 
-                    () -> assertToken(tokens.get(12), 4, 4, "write", KeyWorld.WRITE),
+                    () -> assertToken(tokens.get(12), 4, 5, "write", KeyWorld.WRITE),
                     () -> assertToken(tokens.get(13), 4, 11, "b", Constants.IDENTIFIER),
 
                     () -> assertToken(tokens.get(14), 5, 1, "}", Symbols.SMB_CBC),
