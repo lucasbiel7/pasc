@@ -3,12 +3,14 @@ package br.com.unibh.compiler.pasc.lexic.service;
 import br.com.unibh.compiler.pasc.lexic.configuration.EOFConfig;
 import br.com.unibh.compiler.pasc.lexic.configuration.PanicModeConfig;
 import br.com.unibh.compiler.pasc.lexic.exceptions.UnexpectedSymbolException;
+import br.com.unibh.compiler.pasc.lexic.model.SymbolTable;
 import br.com.unibh.compiler.pasc.lexic.model.TokeError;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
 import br.com.unibh.compiler.pasc.lexic.states.impl.CommentLineState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.EmptyState;
+import br.com.unibh.compiler.pasc.lexic.states.impl.IdentifierState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.InitialState;
 import lombok.Getter;
 
@@ -22,9 +24,11 @@ import java.util.List;
 public class ProcessText {
 
     private List<Token> tokens;
+    private SymbolTable symbolTable;
 
     public ProcessText() {
         tokens = new ArrayList<>();
+        symbolTable = new SymbolTable();
     }
 
 
@@ -45,6 +49,7 @@ public class ProcessText {
                     addFinalStateToTokens(
                             line, column - lastFinalState.value().length(),
                             lastFinalState.value(), lastFinalState.name());
+                    verifyToTableSymbol(lastFinalState);
                     lastFinalState = null;
                     erros = 0;
                     actualState = InitialState.getInstance();
@@ -77,6 +82,12 @@ public class ProcessText {
             }
         }
         eofToken(line, column);
+    }
+
+    private void verifyToTableSymbol(FinalState lastFinalState) {
+        if (lastFinalState instanceof IdentifierState identifierState) {
+            symbolTable.add(identifierState.value());
+        }
     }
 
     private void addFinalStateToTokens(int line, int column, String value, String name) {
