@@ -32,9 +32,9 @@ public class App {
 
     private static void showToken(Token token) {
         if (token instanceof TokeError) {
-            log.severe(String.valueOf(token));
+            System.out.println(String.valueOf(token));
         } else {
-            log.info(String.valueOf(token));
+            System.out.println(token);
         }
     }
 }
