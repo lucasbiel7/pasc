@@ -7,6 +7,7 @@ import br.com.unibh.compiler.pasc.lexic.model.TokeError;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
+import br.com.unibh.compiler.pasc.lexic.states.impl.ClosedStringState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.CommentLineState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.EmptyState;
 import br.com.unibh.compiler.pasc.lexic.states.impl.InitialState;
@@ -43,7 +44,7 @@ public class ProcessText {
                     lastFinalState = finalState;
                 } else if (actualState instanceof EmptyState) {
                     addFinalStateToTokens(
-                            line, column - lastFinalState.value().length(),
+                            line, calculateCollumn(column, lastFinalState),
                             lastFinalState.value(), lastFinalState.name());
                     lastFinalState = null;
                     erros = 0;
@@ -78,7 +79,12 @@ public class ProcessText {
         }
         eofToken(line, column);
     }
-
+    private int calculateCollumn(int column, FinalState finalState){
+        if(finalState instanceof ClosedStringState){
+            return column - finalState.value().length() - 2;
+        }
+        return column - finalState.value().length();
+    }
     private void addFinalStateToTokens(int line, int column, String value, String name) {
         tokens.add(Token.builder()
                 .column(column)
