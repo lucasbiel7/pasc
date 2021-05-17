@@ -18,7 +18,16 @@ Compilador da linguagem PasC.
 - Qual a necessidade de contar tabulação?
 - Não case sensitive e apenas para identificadores?
 - Verdadeiro e falso não serão representados?
-- **_Aspas não são tokes_** Significa que não devemos contabiliza-las nos tokens?
+- **_Aspas não são tokes_** Significa que não devemos contabilizar-las nos tokens?
+- A tabela de símbolos irá armazenar local da declaração? O que colocar para palavras reservadas?
+
+### Pendências
+
+- Testar operador or e and
+- Fazer teste de <=
+- Testar ponto flutuante
+- Testar programa encerrando com ponto flutuante incompleto Ex 1. ou .3124
+
 
 
 
