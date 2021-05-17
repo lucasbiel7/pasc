@@ -185,6 +185,59 @@ class ProcessTextTest {
 
         }
     }
+    @SneakyThrows
+    @Test
+    @DisplayName("Teste um programa Operações entre dois números")
+    void testWhenProgramMultOperators() {
+        try (final InputStream resource = getResource("program7.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+            assertEquals(37, tokens.size());
+            assertAll(
+                    () -> assertToken(tokens.get(0), 2, 1, "var1", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(1), 2, 6, "=", Operators.OP_ATRIB.getTokenName()),
+                    () -> assertToken(tokens.get(2), 2, 8, "10", Constants.NUM_CONST.getTokenName()),
+                    () -> assertToken(tokens.get(3), 3, 1, "var2", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(4), 3, 6, "=", Operators.OP_ATRIB.getTokenName()),
+                    () -> assertToken(tokens.get(5), 3, 8, "20", Constants.NUM_CONST.getTokenName()),
+                    () -> assertToken(tokens.get(6), 4, 1, "soma", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(7), 4, 6, "=", Operators.OP_ATRIB.getTokenName()),
+                    () -> assertToken(tokens.get(8), 4, 8, "var1", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(9), 4, 12, "+", Operators.OP_AD.getTokenName()),
+                    () -> assertToken(tokens.get(10), 4, 13, "var2", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(11), 5, 1, "subtracao", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(12), 5, 11, "=", Operators.OP_ATRIB.getTokenName()),
+                    () -> assertToken(tokens.get(13), 5, 13, "var1", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(14), 5, 17, "-", Operators.OP_MIN.getTokenName()),
+                    () -> assertToken(tokens.get(15), 5, 18, "var2", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(16), 6, 1, "multiplicacao", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(17), 6, 15, "=", Operators.OP_ATRIB.getTokenName()),
+                    () -> assertToken(tokens.get(18), 6, 17, "var1", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(19), 6, 21, "*", Operators.OP_MUL.getTokenName()),
+                    () -> assertToken(tokens.get(20), 6, 22, "var2", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(21), 7, 1, "divisao", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(22), 7, 9, "=", Operators.OP_ATRIB.getTokenName()),
+                    () -> assertToken(tokens.get(23), 7, 11, "var1", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(24), 7, 15, "/", Operators.OP_DIV.getTokenName()),
+                    () -> assertToken(tokens.get(25), 7, 16, "var2", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(26), 8, 1, "if", KeyWorld.IF.getTokenName()),
+                    () -> assertToken(tokens.get(27), 8, 3, "(", Symbols.SMB_OPA.getTokenName()),
+                    () -> assertToken(tokens.get(28), 8, 4, "var1", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(29), 8, 8, ">", Operators.OP_GT.getTokenName()),
+                    () -> assertToken(tokens.get(30), 8, 9, "var2", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(31), 8, 13, ")", Symbols.SMB_CPA.getTokenName()),
+                    () -> assertToken(tokens.get(32), 8, 14, "{", Symbols.SMB_OBC.getTokenName()),
+                    () -> assertToken(tokens.get(33), 9, 5, "write", KeyWorld.WRITE.getTokenName()),
+                    () -> assertToken(tokens.get(34), 9, 11, "VAR1 EH MAIOR QUE VAR2", Constants.CHAR_CONST.getTokenName()),
+                    () -> assertToken(tokens.get(35), 10, 1, "}", Symbols.SMB_CBC.getTokenName()),
+                    () -> assertToken(tokens.get(36), 10, 51, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+            );
+
+
+        }
+    }
 
     @SneakyThrows
     @Test

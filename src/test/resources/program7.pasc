@@ -1,0 +1,10 @@
+//Operações entre dois números
+var1 = 10                           //3
+var2 = 20                           //3
+soma = var1+var2                    //5
+subtracao = var1-var2               //5
+multiplicacao = var1*var2           //5
+divisao = var1/var2                 //5
+if(var1>var2){                      //7
+    write "VAR1 EH MAIOR QUE VAR2"  //2
+}                                   //1  tokens:36

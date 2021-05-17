@@ -45,4 +45,5 @@ class OperatorStateTest extends ValidateStateHelperTest {
         }
     }
 
+
 }
