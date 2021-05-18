@@ -1,6 +1,6 @@
 package br.com.unibh.compiler.pasc.lexic.service;
 
-import br.com.unibh.compiler.pasc.lexic.configuration.EOFConfig;
+import br.com.unibh.compiler.pasc.lexic.configuration.FileConfig;
 import br.com.unibh.compiler.pasc.lexic.configuration.PanicModeConfig;
 import br.com.unibh.compiler.pasc.lexic.exceptions.UnexpectedSymbolException;
 import br.com.unibh.compiler.pasc.lexic.model.SymbolTable;
@@ -74,7 +74,7 @@ public class ProcessText {
                     addingErrorToken(line, actualColumn, e.getMessage());
                     validateStopProgram(erros);
                 } finally {
-                    actualColumn++;
+                    actualColumn += valueCasted == '\t' ? FileConfig.TAB_VALUE_COLUMN : 1;
                     if (valueCasted == '\n') {
                         line++;
                         actualColumn = 1;
@@ -116,8 +116,8 @@ public class ProcessText {
         tokens.add(Token.builder()
                 .column(column)
                 .line(line)
-                .value(EOFConfig.EOF_TOKEN_NAME)
-                .name(EOFConfig.EOF_TOKEN_NAME)
+                .value(FileConfig.EOF_TOKEN_NAME)
+                .name(FileConfig.EOF_TOKEN_NAME)
                 .build());
     }
 

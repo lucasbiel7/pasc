@@ -20,6 +20,7 @@ Compilador da linguagem PasC.
 - Verdadeiro e falso não serão representados?
 - **_Aspas não são tokes_** Significa que não devemos contabilizar-las nos tokens?
 - A tabela de símbolos irá armazenar local da declaração? O que colocar para palavras reservadas?
+- String vazia é permitido?
 
 ### Pendências
 

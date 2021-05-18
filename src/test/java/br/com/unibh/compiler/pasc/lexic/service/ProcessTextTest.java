@@ -1,6 +1,6 @@
 package br.com.unibh.compiler.pasc.lexic.service;
 
-import br.com.unibh.compiler.pasc.lexic.configuration.EOFConfig;
+import br.com.unibh.compiler.pasc.lexic.configuration.FileConfig;
 import br.com.unibh.compiler.pasc.lexic.configuration.PanicModeConfig;
 import br.com.unibh.compiler.pasc.lexic.model.Constants;
 import br.com.unibh.compiler.pasc.lexic.model.KeyWorld;
@@ -104,7 +104,7 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(7), 3, 2, "write", KeyWorld.WRITE.getTokenName()),
                     () -> assertToken(tokens.get(8), 3, 8, "var1", Constants.IDENTIFIER.getTokenName()),
                     () -> assertToken(tokens.get(9), 4, 1, "}", Symbols.SMB_CBC.getTokenName()),
-                    () -> assertToken(tokens.get(10), 4, 2, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+                    () -> assertToken(tokens.get(10), 4, 2, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
         }
     }
@@ -180,7 +180,7 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(0), 4, 1, "5", Constants.NUM_CONST.getTokenName()),
                     () -> assertToken(tokens.get(1), 4, 2, "!=", Operators.OP_NE.getTokenName()),
                     () -> assertToken(tokens.get(2), 4, 4, "4", Constants.NUM_CONST.getTokenName()),
-                    () -> assertToken(tokens.get(3), 4, 64, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+                    () -> assertToken(tokens.get(3), 4, 64, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
 
         }
@@ -233,7 +233,7 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(33), 9, 5, "write", KeyWorld.WRITE.getTokenName()),
                     () -> assertToken(tokens.get(34), 9, 11, "VAR1 EH MAIOR QUE VAR2", Constants.CHAR_CONST.getTokenName()),
                     () -> assertToken(tokens.get(35), 10, 1, "}", Symbols.SMB_CBC.getTokenName()),
-                    () -> assertToken(tokens.get(36), 10, 51, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+                    () -> assertToken(tokens.get(36), 10, 51, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
 
 
@@ -252,7 +252,7 @@ class ProcessTextTest {
             assertEquals(2, tokens.size());
             assertAll(
                     () -> assertToken(tokens.get(0), 1, 31, "A String deve ser fechada com \"", PanicModeConfig.TOKEN_ERROR_NAME),
-                    () -> assertToken(tokens.get(1), 1, 31, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+                    () -> assertToken(tokens.get(1), 1, 31, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
         }
     }
@@ -289,7 +289,7 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(14), 5, 1, "}", Symbols.SMB_CBC),
 
 
-                    () -> assertToken(tokens.get(15), 5, 2, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+                    () -> assertToken(tokens.get(15), 5, 2, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
         }
     }
@@ -307,7 +307,7 @@ class ProcessTextTest {
             assertAll(
                     () -> assertTokenError(tokens.get(0), 1, 2, PanicModeConfig.TOKEN_ERROR_NAME),
                     () -> assertToken(tokens.get(1), 1, 1, "", Constants.CHAR_CONST),
-                    () -> assertToken(tokens.get(2), 1, 4, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+                    () -> assertToken(tokens.get(2), 1, 4, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
         }
     }
@@ -329,7 +329,7 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(3), 1, 7, ">", Operators.OP_GT),
                     () -> assertToken(tokens.get(4), 1, 9, "a", Constants.IDENTIFIER),
                     () -> assertToken(tokens.get(5), 1, 10, ")", Symbols.SMB_CPA),
-                    () -> assertToken(tokens.get(6), 1, 11, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+                    () -> assertToken(tokens.get(6), 1, 11, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
         }
     }
@@ -362,7 +362,7 @@ class ProcessTextTest {
 
                     () -> assertToken(tokens.get(13), 3, 1, "}", Symbols.SMB_CBC),
 
-                    () -> assertToken(tokens.get(14), 3, 2, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+                    () -> assertToken(tokens.get(14), 3, 2, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
         }
     }
@@ -383,7 +383,7 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(1), 1, 5, "a", Constants.IDENTIFIER),
                     () -> assertToken(tokens.get(2), 1, 7, "=", Operators.OP_ATRIB),
                     () -> assertToken(tokens.get(3), 1, 9, "125.21", Constants.NUM_CONST),
-                    () -> assertToken(tokens.get(4), 1, 15, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+                    () -> assertToken(tokens.get(4), 1, 15, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
 
         }
