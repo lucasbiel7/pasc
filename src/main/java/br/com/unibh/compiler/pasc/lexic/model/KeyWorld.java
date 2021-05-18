@@ -58,10 +58,6 @@ public enum KeyWorld implements TokenName {
         }
     }
 
-    public static boolean isKeyWord(String value) {
-        return CacheKeyWorld.tokens.containsKey(value);
-    }
-
     public static Optional<TokenName> getKeyWorld(String value) {
         return Optional.ofNullable(CacheKeyWorld.tokens.get(value));
     }
