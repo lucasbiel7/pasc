@@ -81,7 +81,6 @@ public class ProcessText {
                     }
                 }
             }
-            // TODO validar erros aqui 123.
             if (lastFinalState != null) {
                 addFinalStateToTokens(line, startColumn, lastFinalState.value(), lastFinalState.name());
             } else {

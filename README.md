@@ -15,8 +15,8 @@ Compilador da linguagem PasC.
 
 ## Dúvidas
 
-- Qual a necessidade de contar tabulação?
-- Não case sensitive e apenas para identificadores?
+- Qual a necessidade de contar tabulação? Conta mais na coluna
+- Não case sensitive e apenas para identificadores? Identificadores palavras reservadas
 - Verdadeiro e falso não serão representados?
 - **_Aspas não são tokes_** Significa que não devemos contabilizar-las nos tokens?
 - A tabela de símbolos irá armazenar local da declaração? O que colocar para palavras reservadas?

@@ -37,7 +37,7 @@ public class InitialState implements State {
             case '/' -> DivisionState.getInstance();
             case '=' -> AttributionState.getInstance();
             case '+', '-', '*' -> new OperatorState(value);
-            case '"', '\'' -> new StringState(value);
+            case '"' -> new StringState(value);
             case '<' -> LessThanState.getInstance();
             case '>' -> GreaterThanState.getInstance();
             case '!' -> NotOperatorState.getInstance();
