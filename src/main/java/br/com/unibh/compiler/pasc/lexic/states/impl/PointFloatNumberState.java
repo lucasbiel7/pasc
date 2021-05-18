@@ -1,6 +1,6 @@
 package br.com.unibh.compiler.pasc.lexic.states.impl;
 
-import br.com.unibh.compiler.pasc.lexic.exceptions.IllegalCharacterException;
+import br.com.unibh.compiler.pasc.lexic.exceptions.UnexpectedSymbolException;
 import br.com.unibh.compiler.pasc.lexic.states.State;
 
 public class PointFloatNumberState implements State {
@@ -13,6 +13,6 @@ public class PointFloatNumberState implements State {
     @Override
     public State nextState(char value) {
         if (Character.isDigit(value)) return new FloatNumberState(this.value, value);
-        throw new IllegalCharacterException("Estávamos aguardando um número após o ponto.");
+        throw new UnexpectedSymbolException("MSG010");
     }
 }

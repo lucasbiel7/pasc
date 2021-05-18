@@ -1,6 +1,6 @@
 package br.com.unibh.compiler.pasc.lexic.states.impl;
 
-import br.com.unibh.compiler.pasc.lexic.exceptions.IllegalCharacterException;
+import br.com.unibh.compiler.pasc.lexic.exceptions.UnexpectedSymbolException;
 import br.com.unibh.compiler.pasc.lexic.model.Constants;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
@@ -39,6 +39,6 @@ class FloatNumberStateTest extends ValidateStateHelperTest {
     @Test
     @DisplayName("Verificar se existe símbolo inválido após o ponto")
     void testWhenSymbolAfterThePeriod() {
-        assertThrows(IllegalCharacterException.class, () -> runProgram("4587.u"));
+        assertThrows(UnexpectedSymbolException.class, () -> runProgram("4587.u"));
     }
 }

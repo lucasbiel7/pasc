@@ -366,5 +366,27 @@ class ProcessTextTest {
             );
         }
     }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Testando atribuição de número com ponto flutuante")
+    void testWhenAttrSomeFloatVariable() {
+        try (final InputStream resource = getResource("program12.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+            assertEquals(5, tokens.size());
+
+            assertAll(
+                    () -> assertToken(tokens.get(0), 1, 1, "num", KeyWorld.NUM),
+                    () -> assertToken(tokens.get(1), 1, 5, "a", Constants.IDENTIFIER),
+                    () -> assertToken(tokens.get(2), 1, 7, "=", Operators.OP_ATRIB),
+                    () -> assertToken(tokens.get(3), 1, 9, "125.21", Constants.NUM_CONST),
+                    () -> assertToken(tokens.get(4), 1, 15, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+            );
+
+        }
+    }
 }
 
