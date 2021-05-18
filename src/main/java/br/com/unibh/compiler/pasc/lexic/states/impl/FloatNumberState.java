@@ -19,8 +19,10 @@ public class FloatNumberState implements FinalState {
 
     @Override
     public State nextState(char value) {
-        if (Character.isDigit(value)) return new FloatNumberState(this, value);
-        return null;
+        if (Character.isDigit(value)) {
+            return new FloatNumberState(this, value);
+        }
+        return FinalState.super.nextState(value);
     }
 
     @Override
