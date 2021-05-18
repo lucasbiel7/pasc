@@ -24,6 +24,9 @@ public class StringState implements State {
     @Override
     public State nextState(char value) {
         if (value == delimiter) {
+            if (this.value.isEmpty()) {
+                throw new UnexpectedSymbolException("MSG011");
+            }
             return new ClosedStringState(this.value.toString());
         }
         if (value == '\n') {
