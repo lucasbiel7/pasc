@@ -29,11 +29,22 @@ public class StringState implements State {
         if (value == '\n') {
             throw new UnexpectedSymbolException("MSG002");
         }
-        if (value < 128) {
+        if (isAscii(value)) {
             this.value.append(value);
             return this;
         }
         throw new UnexpectedSymbolException("MSG003", value);
+    }
+
+    /**
+     * Verifica se os caracteres são ASCII
+     *
+     * @param ch
+     * @return retorna verdadeiro caso o caracter seja ascii
+     * @see java.util.regex.ASCII#isAscii(int)
+     */
+    static boolean isAscii(int ch) {
+        return ((ch & 0xFFFFFF80) == 0);
     }
 
     @Override

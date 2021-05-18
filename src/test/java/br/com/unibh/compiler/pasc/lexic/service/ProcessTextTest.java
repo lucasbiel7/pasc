@@ -333,4 +333,38 @@ class ProcessTextTest {
             );
         }
     }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Testando operador and dentro de uma condicional")
+    void testWhenUseAndWithIfOperator() {
+        try (final InputStream resource = getResource("program11.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+            assertEquals(15, tokens.size());
+            assertAll(
+                    () -> assertToken(tokens.get(0), 1, 1, "if", KeyWorld.IF),
+                    () -> assertToken(tokens.get(1), 1, 3, "(", Symbols.SMB_OPA),
+                    () -> assertToken(tokens.get(2), 1, 4, "a", Constants.IDENTIFIER),
+                    () -> assertToken(tokens.get(3), 1, 5, ">", Operators.OP_GT),
+                    () -> assertToken(tokens.get(4), 1, 6, "1", Constants.NUM_CONST),
+                    () -> assertToken(tokens.get(5), 1, 8, "and", KeyWorld.AND),
+                    () -> assertToken(tokens.get(6), 1, 12, "b", Constants.IDENTIFIER),
+                    () -> assertToken(tokens.get(7), 1, 13, "<", Operators.OP_LT),
+                    () -> assertToken(tokens.get(8), 1, 14, "2", Constants.NUM_CONST),
+                    () -> assertToken(tokens.get(9), 1, 15, ")", Symbols.SMB_CPA),
+                    () -> assertToken(tokens.get(10), 1, 16, "{", Symbols.SMB_OBC),
+
+                    () -> assertToken(tokens.get(11), 2, 4, "write", KeyWorld.WRITE),
+                    () -> assertToken(tokens.get(12), 2, 10, "a", Constants.IDENTIFIER),
+
+                    () -> assertToken(tokens.get(13), 3, 1, "}", Symbols.SMB_CBC),
+
+                    () -> assertToken(tokens.get(14), 3, 2, EOFConfig.EOF_TOKEN_NAME, EOFConfig.EOF_TOKEN_NAME)
+            );
+        }
+    }
 }
+

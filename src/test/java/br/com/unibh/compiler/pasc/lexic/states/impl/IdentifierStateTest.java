@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Testando quando aparecer um identificador")
 class IdentifierStateTest extends ValidateStateHelperTest {
+
     @DisplayName("Teste Identificador de Palavra Reservada")
     @Test
     void testWhenFindIdentifierKW() {
@@ -62,7 +63,7 @@ class IdentifierStateTest extends ValidateStateHelperTest {
         }
     }
 
-    @DisplayName("Testando todas as palavras reservadas")
+    @DisplayName("Testando todas as palavras reservadas em Upper Case")
     @ParameterizedTest(name = "keyword")
     @EnumSource(value = KeyWorld.class, names = {
             "PROGRAM",
