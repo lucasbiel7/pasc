@@ -389,5 +389,24 @@ class ProcessTextTest {
 
         }
     }
+
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Testando utilizar uma String com enter dentro dela")
+    void testWhenUseEmptyStringProgram() {
+        try (final InputStream resource = getResource("program14.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+            assertEquals(3, tokens.size());
+            assertAll(
+                    () -> assertTokenError(tokens.get(0), 1, 13, PanicModeConfig.TOKEN_ERROR_NAME),
+                    () -> assertToken(tokens.get(1), 1, 1, "Hello world", Constants.CHAR_CONST),
+                    () -> assertToken(tokens.get(2), 2, 2, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
+            );
+        }
+    }
 }
 
