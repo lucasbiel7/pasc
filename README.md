@@ -24,10 +24,8 @@ Compilador da linguagem PasC.
 
 ### Pendências
 
-- Testar operador or e and
-- Fazer teste de <=
-- Testar ponto flutuante
 - Testar programa encerrando com ponto flutuante incompleto Ex 1. ou .3124
+- Melhorar a visualização dos prints dos quando haver um erro no código printando os tokens anteriores ao erro.
 
 
 
