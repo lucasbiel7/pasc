@@ -1,6 +1,5 @@
 package br.com.unibh.compiler.pasc.lexic.model;
 
-import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
@@ -8,29 +7,36 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-@Getter
 public class SymbolTable {
 
-    private Map<String, String> symbols;
+    private Map<String, Token> symbols;
 
     public SymbolTable() {
         this.symbols = new HashMap<>();
         loadKeyWorld();
     }
 
-    public Stream<Pair<String, String>> stream() {
+    public Stream<Pair<String, Token>> stream() {
         return this.symbols.keySet().stream().map(s -> Pair.of(s, symbols.get(s)));
+    }
+
+    public int size() {
+        return symbols.size();
     }
 
     /**
      * Carrega as palavras reservadas na tabela de simbolos
      */
     private void loadKeyWorld() {
-        Arrays.stream(KeyWorld.values()).forEach(keyWorld -> getSymbols().putIfAbsent(keyWorld.getValue(), keyWorld.getTokenName()));
+        Arrays.stream(KeyWorld.values()).forEach(keyWorld -> add(keyWorld.getValue().toLowerCase(), Token.builder().build()));
     }
 
     //TODO verificar o que será avaliado no value
-    public void add(String value) {
-        symbols.putIfAbsent(value, Constants.IDENTIFIER.getTokenName());
+    public void add(String value, Token token) {
+        symbols.put(value.toLowerCase(), token);
+    }
+
+    public boolean hasKey(String key) {
+        return this.symbols.containsKey(key.toLowerCase());
     }
 }

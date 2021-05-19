@@ -56,10 +56,7 @@ public class ProcessText {
                     if (actualState instanceof FinalState finalState) {
                         lastFinalState = finalState;
                     } else if (actualState instanceof EmptyState) {
-                        addFinalStateToTokens(
-                                startLine, startColumn,
-                                lastFinalState.value(), lastFinalState.name());
-                        verifyToTableSymbol(lastFinalState);
+                        generateTokenAndValidateIdentifier(lastFinalState, startLine, startColumn);
                         lastFinalState = null;
                         erros = 0;
                         actualState = InitialState.getInstance();
@@ -84,7 +81,7 @@ public class ProcessText {
                 }
             }
             if (lastFinalState != null) {
-                addFinalStateToTokens(startLine, startColumn, lastFinalState.value(), lastFinalState.name());
+                generateTokenAndValidateIdentifier(lastFinalState, startLine, startColumn);
             } else {
                 if (!(actualState instanceof InitialState || actualState instanceof CommentLineState)) {
                     //ERRO de estado não finalizado
@@ -95,19 +92,25 @@ public class ProcessText {
         }
     }
 
-    private void verifyToTableSymbol(FinalState lastFinalState) {
+    private void generateTokenAndValidateIdentifier(FinalState lastFinalState, int startLine, int startColumn) {
+        final Token token = generateToken(startLine, startColumn, lastFinalState.value(), lastFinalState.name());
+        this.tokens.add(token);
+        verifyToTableSymbol(lastFinalState, token);
+    }
+
+    private void verifyToTableSymbol(FinalState lastFinalState, Token token) {
         if (lastFinalState instanceof IdentifierState identifierState) {
-            symbolTable.add(identifierState.value().toLowerCase());
+            symbolTable.add(identifierState.value(), token);
         }
     }
 
-    private void addFinalStateToTokens(int line, int column, String value, String name) {
-        tokens.add(Token.builder()
+    private Token generateToken(int line, int column, String value, String name) {
+        return Token.builder()
                 .column(column)
                 .line(line)
                 .value(value)
                 .name(name)
-                .build());
+                .build();
     }
 
     private void addingErrorToken(int line, int column, String message) {

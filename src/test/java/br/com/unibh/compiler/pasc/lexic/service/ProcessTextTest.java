@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -106,8 +107,26 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(9), 4, 1, "}", Symbols.SMB_CBC.getTokenName()),
                     () -> assertToken(tokens.get(10), 4, 2, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
+            // Assert Symbol table
+            assertAllKeyWorld();
+            assertEquals(KeyWorld.values().length + 3, processText.getSymbolTable().size());
+            assertAll(
+                    () -> assertTrue(processText.getSymbolTable().hasKey("var1")),
+                    () -> assertTrue(processText.getSymbolTable().hasKey("v")),
+                    () -> assertTrue(processText.getSymbolTable().hasKey("r2")),
+                    () -> assertTrue(processText.getSymbolTable().hasKey("VAR1")),
+                    () -> assertTrue(processText.getSymbolTable().hasKey("V")),
+                    () -> assertTrue(processText.getSymbolTable().hasKey("R2"))
+            );
         }
     }
+
+    private void assertAllKeyWorld() {
+        Arrays.stream(KeyWorld.values())
+                .map(KeyWorld::getValue)
+                .forEach(valueOfKeyWorld -> assertTrue(processText.getSymbolTable().hasKey(valueOfKeyWorld)));
+    }
+
 
     @SneakyThrows
     @Test
