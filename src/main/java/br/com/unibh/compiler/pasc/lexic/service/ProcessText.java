@@ -38,9 +38,10 @@ public class ProcessText {
         int value;
         State actualState = InitialState.getInstance();
         FinalState lastFinalState = null;
-        int line = 1;
+        int actualLine = 1;
         int actualColumn = 1;
         int erros = 0;
+        int startLine = 1;
         int startColumn = 1;
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(data, StandardCharsets.UTF_8))) {
             while ((value = bufferedReader.read()) != -1) {
@@ -48,6 +49,7 @@ public class ProcessText {
                 try {
                     if (actualState instanceof InitialState) {
                         startColumn = actualColumn;
+                        startLine = actualLine;
                     }
                     actualState = actualState.nextState(valueCasted);
 
@@ -55,7 +57,7 @@ public class ProcessText {
                         lastFinalState = finalState;
                     } else if (actualState instanceof EmptyState) {
                         addFinalStateToTokens(
-                                line, startColumn,
+                                startLine, startColumn,
                                 lastFinalState.value(), lastFinalState.name());
                         verifyToTableSymbol(lastFinalState);
                         lastFinalState = null;
@@ -71,25 +73,25 @@ public class ProcessText {
                     }
                 } catch (UnexpectedSymbolException e) {
                     erros++;
-                    addingErrorToken(line, actualColumn, e.getMessage());
+                    addingErrorToken(actualLine, actualColumn, e.getMessage());
                     validateStopProgram(erros);
                 } finally {
                     actualColumn += valueCasted == '\t' ? FileConfig.TAB_VALUE_COLUMN : 1;
                     if (valueCasted == '\n') {
-                        line++;
+                        actualLine++;
                         actualColumn = 1;
                     }
                 }
             }
             if (lastFinalState != null) {
-                addFinalStateToTokens(line, startColumn, lastFinalState.value(), lastFinalState.name());
+                addFinalStateToTokens(startLine, startColumn, lastFinalState.value(), lastFinalState.name());
             } else {
                 if (!(actualState instanceof InitialState || actualState instanceof CommentLineState)) {
                     //ERRO de estado não finalizado
-                    addingErrorToken(line, actualColumn, actualState.messageError());
+                    addingErrorToken(actualLine, actualColumn, actualState.messageError());
                 }
             }
-            eofToken(line, actualColumn);
+            eofToken(actualLine, actualColumn);
         }
     }
 

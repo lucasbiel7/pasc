@@ -1,4 +1,4 @@
 // Exemplo utilizado pelo professor em aula
 if var1 < v@r2 {
- write var1
+	write var1
 }

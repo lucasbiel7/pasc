@@ -101,8 +101,8 @@ class ProcessTextTest {
                     () -> assertTokenError(tokens.get(4), 2, 12, PanicModeConfig.TOKEN_ERROR_NAME),
                     () -> assertToken(tokens.get(5), 2, 13, "r2", Constants.IDENTIFIER.getTokenName()),
                     () -> assertToken(tokens.get(6), 2, 16, "{", Symbols.SMB_OBC.getTokenName()),
-                    () -> assertToken(tokens.get(7), 3, 2, "write", KeyWorld.WRITE.getTokenName()),
-                    () -> assertToken(tokens.get(8), 3, 8, "var1", Constants.IDENTIFIER.getTokenName()),
+                    () -> assertToken(tokens.get(7), 3, 4, "write", KeyWorld.WRITE.getTokenName()),
+                    () -> assertToken(tokens.get(8), 3, 10, "var1", Constants.IDENTIFIER.getTokenName()),
                     () -> assertToken(tokens.get(9), 4, 1, "}", Symbols.SMB_CBC.getTokenName()),
                     () -> assertToken(tokens.get(10), 4, 2, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
@@ -303,11 +303,12 @@ class ProcessTextTest {
             final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
-            assertEquals(3, tokens.size());
+            assertEquals(4, tokens.size());
             assertAll(
                     () -> assertTokenError(tokens.get(0), 1, 2, PanicModeConfig.TOKEN_ERROR_NAME),
-                    () -> assertToken(tokens.get(1), 1, 1, "", Constants.CHAR_CONST),
-                    () -> assertToken(tokens.get(2), 1, 4, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
+                    () -> assertTokenError(tokens.get(1), 1, 3, PanicModeConfig.TOKEN_ERROR_NAME),
+                    () -> assertTokenError(tokens.get(2), 1, 4, PanicModeConfig.TOKEN_ERROR_NAME),
+                    () -> assertToken(tokens.get(3), 1, 4, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
         }
     }
@@ -389,9 +390,28 @@ class ProcessTextTest {
         }
     }
 
+
     @SneakyThrows
     @Test
-    @DisplayName("Testando operador and dentro de uma condicional")
+
+    @DisplayName("Testando utilizar uma String com enter dentro dela")
+    void testWhenUseEmptyStringProgram() {
+        try (final InputStream resource = getResource("program14.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+            assertEquals(3, tokens.size());
+            assertAll(
+                    () -> assertTokenError(tokens.get(0), 1, 13, PanicModeConfig.TOKEN_ERROR_NAME),
+                    () -> assertToken(tokens.get(1), 1, 1, "Hello world", Constants.CHAR_CONST),
+                    () -> assertToken(tokens.get(2), 2, 2, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
+            );
+        }
+    }
+    @SneakyThrows
+    @Test
+    @DisplayName("Testando Tabulação")
     void testWhenUseAndWithIfElse() {
         try (final InputStream resource = getResource("program13.pasc")) {
             assertDoesNotThrow(() -> processText.process(resource));
@@ -414,6 +434,5 @@ class ProcessTextTest {
             );
         }
     }
-
 }
 
