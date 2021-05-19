@@ -1,0 +1,4 @@
+if var < 100 then   //13
+	print var       //8
+else                //4
+	print 100       //8

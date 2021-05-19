@@ -393,6 +393,7 @@ class ProcessTextTest {
 
     @SneakyThrows
     @Test
+
     @DisplayName("Testando utilizar uma String com enter dentro dela")
     void testWhenUseEmptyStringProgram() {
         try (final InputStream resource = getResource("program14.pasc")) {
@@ -408,6 +409,7 @@ class ProcessTextTest {
             );
         }
     }
+
 
     @SneakyThrows
     @Test
@@ -426,6 +428,33 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(3), 1, 10, "10.5", Constants.NUM_CONST),
                     () -> assertToken(tokens.get(4), 1, 14, ";", Symbols.SMB_SEM),
                     () -> assertToken(tokens.get(5), 1, 15, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
+            );
+        }
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Testando Tabulação")
+    void testWhenUseAndWithIfElse() {
+        try (final InputStream resource = getResource("program13.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+
+            assertEquals(11, tokens.size());
+            assertAll(
+                    () -> assertToken(tokens.get(0), 1, 1, "if", KeyWorld.IF),
+                    () -> assertToken(tokens.get(1), 1, 4, "var", Constants.IDENTIFIER),
+                    () -> assertToken(tokens.get(2), 1, 8, "<", Operators.OP_LT),
+                    () -> assertToken(tokens.get(3), 1, 10, "100", Constants.NUM_CONST),
+                    () -> assertToken(tokens.get(4), 1, 14, "then", Constants.IDENTIFIER),
+                    () -> assertToken(tokens.get(5), 2, 4, "print", Constants.IDENTIFIER),
+                    () -> assertToken(tokens.get(6), 2, 10, "var", Constants.IDENTIFIER),
+                    () -> assertToken(tokens.get(7), 3, 1, "else", KeyWorld.ELSE),
+                    () -> assertToken(tokens.get(8), 4, 4, "print", Constants.IDENTIFIER),
+                    () -> assertToken(tokens.get(9), 4, 10, "100", Constants.NUM_CONST),
+                    () -> assertToken(tokens.get(10), 4, 23, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
         }
     }
