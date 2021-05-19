@@ -7,13 +7,24 @@ import br.com.unibh.compiler.pasc.lexic.service.ProcessText;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.logging.LogManager;
 
 @Log
 public class App {
+
+    static {
+        InputStream stream = App.class.getClassLoader().getResourceAsStream("logging.properties");
+        try {
+            LogManager.getLogManager().readConfiguration(stream);
+        } catch (IOException e) {
+            log.severe(e.getMessage());
+        }
+    }
 
     public static final String MARKED_STRING = " *************** ";
 

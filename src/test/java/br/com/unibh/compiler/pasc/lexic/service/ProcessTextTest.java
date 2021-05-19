@@ -408,5 +408,26 @@ class ProcessTextTest {
             );
         }
     }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Testando um numero com ponto flutuante com encerramento do comando")
+    void testWhenFloatNumberHasOtherCommand() {
+        try (final InputStream resource = getResource("program15.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+            assertEquals(6, tokens.size());
+            assertAll(
+                    () -> assertToken(tokens.get(0), 1, 1, "num", KeyWorld.NUM),
+                    () -> assertToken(tokens.get(1), 1, 5, "n1", Constants.IDENTIFIER),
+                    () -> assertToken(tokens.get(2), 1, 8, "=", Operators.OP_ATRIB),
+                    () -> assertToken(tokens.get(3), 1, 10, "10.5", Constants.NUM_CONST),
+                    () -> assertToken(tokens.get(4), 1, 14, ";", Symbols.SMB_SEM),
+                    () -> assertToken(tokens.get(5), 1, 15, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
+            );
+        }
+    }
 }
 
