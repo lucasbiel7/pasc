@@ -1,6 +1,6 @@
 package br.com.unibh.compiler.pasc.lexic;
 
-import br.com.unibh.compiler.pasc.lexic.model.TokeError;
+import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
 import br.com.unibh.compiler.pasc.lexic.service.LanguageLexer;
 import br.com.unibh.compiler.pasc.lexic.service.ProcessText;
@@ -33,11 +33,11 @@ public class App {
         LanguageLexer.setDefaultLocale(Locale.forLanguageTag("pt-BR"));
         if (args.length > 0) {
             final Path file = Path.of(args[0]);
+            ProcessText processText = new ProcessText();
             try (final InputStream inputStream = Files.newInputStream(file)) {
-                ProcessText processText = new ProcessText();
-                processText.process(inputStream);
                 log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG008") + MARKED_STRING);
-                processText.getTokens().stream().forEach(App::showToken);
+                processText.process(inputStream, App::showToken);
+            }finally {
                 log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG009") + MARKED_STRING);
                 processText.getSymbolTable()
                         .stream()
@@ -49,7 +49,7 @@ public class App {
     }
 
     private static void showToken(Token token) {
-        if (token instanceof TokeError) {
+        if (token instanceof TokenError) {
             log.severe(String.valueOf(token));
         } else {
             log.info(String.valueOf(token));

@@ -31,7 +31,6 @@ public class SymbolTable {
         Arrays.stream(KeyWorld.values()).forEach(keyWorld -> add(keyWorld.getValue().toLowerCase(), Token.builder().build()));
     }
 
-    //TODO verificar o que será avaliado no value
     public void add(String value, Token token) {
         symbols.put(value.toLowerCase(), token);
     }

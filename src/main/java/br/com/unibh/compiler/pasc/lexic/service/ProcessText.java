@@ -4,7 +4,7 @@ import br.com.unibh.compiler.pasc.lexic.configuration.FileConfig;
 import br.com.unibh.compiler.pasc.lexic.configuration.PanicModeConfig;
 import br.com.unibh.compiler.pasc.lexic.exceptions.UnexpectedSymbolException;
 import br.com.unibh.compiler.pasc.lexic.model.SymbolTable;
-import br.com.unibh.compiler.pasc.lexic.model.TokeError;
+import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
@@ -21,6 +21,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.function.Consumer;
 
 
 @Getter
@@ -33,8 +35,11 @@ public class ProcessText {
         tokens = new ArrayList<>();
         symbolTable = new SymbolTable();
     }
-
     public void process(InputStream data) throws IOException {
+        process(data, token -> {});
+    }
+
+    public void process(InputStream data, Consumer<Token> tokenConsumer) throws IOException {
         int value;
         State actualState = InitialState.getInstance();
         FinalState lastFinalState = null;
@@ -46,6 +51,10 @@ public class ProcessText {
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(data, StandardCharsets.UTF_8))) {
             while ((value = bufferedReader.read()) != -1) {
                 char valueCasted = (char) value;
+                /**
+                 * Condição para rodar de forma determinística o código tanto no Windows quanto no Linux, ignorando o \r imposto no SO do Windows
+                 */
+                if(System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win") && valueCasted == '\r')continue;
                 try {
                     if (actualState instanceof InitialState) {
                         startColumn = actualColumn;
@@ -56,7 +65,7 @@ public class ProcessText {
                     if (actualState instanceof FinalState finalState) {
                         lastFinalState = finalState;
                     } else if (actualState instanceof EmptyState) {
-                        generateTokenAndValidateIdentifier(lastFinalState, startLine, startColumn);
+                        generateTokenAndValidateIdentifier(lastFinalState, startLine, startColumn, tokenConsumer);
                         lastFinalState = null;
                         erros = 0;
                         actualState = InitialState.getInstance();
@@ -70,7 +79,8 @@ public class ProcessText {
                     }
                 } catch (UnexpectedSymbolException e) {
                     erros++;
-                    addingErrorToken(actualLine, actualColumn, e.getMessage());
+                    addingErrorToken(actualLine, actualColumn, e.getMessage(), tokenConsumer);
+
                     validateStopProgram(erros);
                 } finally {
                     actualColumn += valueCasted == '\t' ? FileConfig.TAB_VALUE_COLUMN : 1;
@@ -81,21 +91,22 @@ public class ProcessText {
                 }
             }
             if (lastFinalState != null) {
-                generateTokenAndValidateIdentifier(lastFinalState, startLine, startColumn);
+                generateTokenAndValidateIdentifier(lastFinalState, startLine, startColumn, tokenConsumer);
             } else {
                 if (!(actualState instanceof InitialState || actualState instanceof CommentLineState)) {
                     //ERRO de estado não finalizado
-                    addingErrorToken(actualLine, actualColumn, actualState.messageError());
+                    addingErrorToken(actualLine, actualColumn, actualState.messageError(), tokenConsumer);
                 }
             }
-            eofToken(actualLine, actualColumn);
+            eofToken(actualLine, actualColumn, tokenConsumer);
         }
     }
 
-    private void generateTokenAndValidateIdentifier(FinalState lastFinalState, int startLine, int startColumn) {
+    private void generateTokenAndValidateIdentifier(FinalState lastFinalState, int startLine, int startColumn, Consumer<Token> tokenConsumer) {
         final Token token = generateToken(startLine, startColumn, lastFinalState.value(), lastFinalState.name());
         this.tokens.add(token);
         verifyToTableSymbol(lastFinalState, token);
+        tokenConsumer.accept(token);
     }
 
     private void verifyToTableSymbol(FinalState lastFinalState, Token token) {
@@ -113,17 +124,21 @@ public class ProcessText {
                 .build();
     }
 
-    private void addingErrorToken(int line, int column, String message) {
-        tokens.add(new TokeError(PanicModeConfig.TOKEN_ERROR_NAME, message, line, column));
+    private void addingErrorToken(int line, int column, String message, Consumer<Token> tokenConsumer) {
+        TokenError tokenError = new TokenError(PanicModeConfig.TOKEN_ERROR_NAME, message, line, column);
+        tokens.add(tokenError);
+        tokenConsumer.accept(tokenError);
     }
 
-    private void eofToken(int line, int column) {
-        tokens.add(Token.builder()
+    private void eofToken(int line, int column, Consumer<Token> tokenConsumer) {
+        Token token = Token.builder()
                 .column(column)
                 .line(line)
                 .value(FileConfig.EOF_TOKEN_NAME)
                 .name(FileConfig.EOF_TOKEN_NAME)
-                .build());
+                .build();
+        tokens.add(token);
+        tokenConsumer.accept(token);
     }
 
     private void validateStopProgram(int erros) {

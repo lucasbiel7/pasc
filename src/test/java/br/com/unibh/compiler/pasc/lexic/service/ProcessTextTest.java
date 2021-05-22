@@ -6,7 +6,7 @@ import br.com.unibh.compiler.pasc.lexic.model.Constants;
 import br.com.unibh.compiler.pasc.lexic.model.KeyWorld;
 import br.com.unibh.compiler.pasc.lexic.model.Operators;
 import br.com.unibh.compiler.pasc.lexic.model.Symbols;
-import br.com.unibh.compiler.pasc.lexic.model.TokeError;
+import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
 import br.com.unibh.compiler.pasc.lexic.model.TokenName;
 import lombok.SneakyThrows;
@@ -164,7 +164,7 @@ class ProcessTextTest {
                 () -> assertEquals(line, assertToken.getLine()),
                 () -> assertEquals(column, assertToken.getColumn()),
                 () -> assertEquals(tokenName, assertToken.getName()),
-                () -> assertTrue(assertToken instanceof TokeError)
+                () -> assertTrue(assertToken instanceof TokenError)
         );
     }
 
@@ -174,7 +174,7 @@ class ProcessTextTest {
                 () -> assertEquals(line, assertToken.getLine()),
                 () -> assertEquals(column, assertToken.getColumn()),
                 () -> assertEquals(tokenEnum.getTokenName(), assertToken.getName()),
-                () -> assertTrue(assertToken instanceof TokeError)
+                () -> assertTrue(assertToken instanceof TokenError)
         );
     }
 
@@ -474,6 +474,25 @@ class ProcessTextTest {
                     () -> assertToken(tokens.get(8), 4, 4, "print", Constants.IDENTIFIER),
                     () -> assertToken(tokens.get(9), 4, 10, "100", Constants.NUM_CONST),
                     () -> assertToken(tokens.get(10), 4, 23, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
+            );
+        }
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Testando operador diferente")
+    void testWhenDifferent() {
+        try (final InputStream resource = getResource("program16.pasc")) {
+            assertDoesNotThrow(() -> processText.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertNotNull(tokens);
+            assertFalse(tokens.isEmpty());
+            assertEquals(4, tokens.size());
+            assertAll(
+                    () -> assertToken(tokens.get(0), 1, 1, "5", Constants.NUM_CONST),
+                    () -> assertToken(tokens.get(1), 1, 3, "!=", Operators.OP_NE),
+                    () -> assertToken(tokens.get(2), 1, 6, "6", Constants.NUM_CONST),
+                    () -> assertToken(tokens.get(3), 1, 7, FileConfig.EOF_TOKEN_NAME, FileConfig.EOF_TOKEN_NAME)
             );
         }
     }

@@ -9,9 +9,9 @@ import java.text.MessageFormat;
  * @author Lucas Dutra
  * @since 16 de maio 2021
  */
-public class TokeError extends Token {
+public class TokenError extends Token {
 
-    public TokeError(String name, String value, int line, int column) {
+    public TokenError(String name, String value, int line, int column) {
         super(name, value, line, column);
     }
 
