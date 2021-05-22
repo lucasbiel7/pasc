@@ -28,7 +28,11 @@ public class SymbolTable {
      * Carrega as palavras reservadas na tabela de simbolos
      */
     private void loadKeyWorld() {
-        Arrays.stream(KeyWorld.values()).forEach(keyWorld -> add(keyWorld.getValue().toLowerCase(), Token.builder().build()));
+        Arrays.stream(KeyWorld.values()).forEach(keyWorld -> add(keyWorld.getValue().toLowerCase(),
+                Token.builder()
+                        .value(keyWorld.getValue())
+                        .name(keyWorld.getTokenName())
+                        .build()));
     }
 
     //TODO verificar o que será avaliado no value
