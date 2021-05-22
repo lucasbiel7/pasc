@@ -22,11 +22,6 @@ Compilador da linguagem PasC.
 - A tabela de símbolos irá armazenar local da declaração? O que colocar para palavras reservadas?
 - String vazia é permitido?
 
-### Pendências
-
-- Testar programa encerrando com ponto flutuante incompleto Ex 1. ou .3124
-- Melhorar a visualização dos prints dos quando haver um erro no código printando os tokens anteriores ao erro.
-
 
 
 
