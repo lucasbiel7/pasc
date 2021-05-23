@@ -24,8 +24,10 @@ Compilador da linguagem PasC.
 
 ## Autômato Determinístico
 
-<p align="center">
-  <img src="media/automato.png" title="Autômato finito determinístico">  
+<p align="center"> 
+    <a href="https://drive.google.com/file/d/1BXv7sQsgFsQNLskwITVXn2o4siJoxnmr/view?usp=sharing">
+    <img src="media/automato.png" title="Autômato finito determinístico">
+    </a>    
 </p>
 
 
