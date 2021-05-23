@@ -24,6 +24,8 @@ Compilador da linguagem PasC.
 
 ## Autômato Determinístico
 
-<img src="C:/Users/cleiton/IdeaProjects/pasc/media/automato.png"/>
+<p align="center">
+  <img src="media/automato.png" title="Autômato finito determinístico">  
+</p>
 
 
