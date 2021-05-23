@@ -22,6 +22,8 @@ Compilador da linguagem PasC.
 - A tabela de símbolos irá armazenar local da declaração? O que colocar para palavras reservadas?
 - String vazia é permitido?
 
+## Autômato Determinístico
 
+<img src="C:/Users/cleiton/IdeaProjects/pasc/media/automato.png"/>
 
 
