@@ -22,6 +22,15 @@ Compilador da linguagem PasC.
 - A tabela de símbolos irá armazenar local da declaração? O que colocar para palavras reservadas?
 - String vazia é permitido?
 
+
+## Como compilar
+
+`mvn clean install`
+
+## Para executar
+
+Ao compilar irá gerar o uma arquivo .jar na pasta target pasta utilizar `java -jar target/cpasc-1.0-SNAPSHOT-shaded.jar 'arquivo.pasc'`
+
 ## Autômato Determinístico
 
 <p align="center"> 
