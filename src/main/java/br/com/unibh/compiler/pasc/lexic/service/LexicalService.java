@@ -4,8 +4,8 @@ import br.com.unibh.compiler.pasc.lexic.configuration.FileConfig;
 import br.com.unibh.compiler.pasc.lexic.configuration.PanicModeConfig;
 import br.com.unibh.compiler.pasc.lexic.exceptions.UnexpectedSymbolException;
 import br.com.unibh.compiler.pasc.lexic.model.SymbolTable;
-import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
+import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.states.FinalState;
 import br.com.unibh.compiler.pasc.lexic.states.State;
 import br.com.unibh.compiler.pasc.lexic.states.impl.CommentLineState;
@@ -26,17 +26,19 @@ import java.util.function.Consumer;
 
 
 @Getter
-public class ProcessText {
+public class LexicalService {
 
     private List<Token> tokens;
     private SymbolTable symbolTable;
 
-    public ProcessText() {
+    public LexicalService() {
         tokens = new ArrayList<>();
         symbolTable = new SymbolTable();
     }
+
     public void process(InputStream data) throws IOException {
-        process(data, token -> {});
+        process(data, token -> {
+        });
     }
 
     public void process(InputStream data, Consumer<Token> tokenConsumer) throws IOException {
@@ -54,7 +56,8 @@ public class ProcessText {
                 /**
                  * Condição para rodar de forma determinística o código tanto no Windows quanto no Linux, ignorando o \r imposto no SO do Windows
                  */
-                if(System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win") && valueCasted == '\r')continue;
+                if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win") && valueCasted == '\r')
+                    continue;
                 try {
                     if (actualState instanceof InitialState) {
                         startColumn = actualColumn;

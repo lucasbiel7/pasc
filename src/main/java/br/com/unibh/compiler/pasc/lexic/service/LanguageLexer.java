@@ -26,9 +26,6 @@ public class LanguageLexer {
         return instance;
     }
 
-    private ResourceBundle resourceBundle;
-
-
     private ResourceBundle getMessages(Locale locale) {
         return ResourceBundle.getBundle("messages", locale);
     }

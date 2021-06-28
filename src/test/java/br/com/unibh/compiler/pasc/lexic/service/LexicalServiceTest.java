@@ -6,8 +6,8 @@ import br.com.unibh.compiler.pasc.lexic.model.Constants;
 import br.com.unibh.compiler.pasc.lexic.model.KeyWorld;
 import br.com.unibh.compiler.pasc.lexic.model.Operators;
 import br.com.unibh.compiler.pasc.lexic.model.Symbols;
-import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
+import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.model.TokenName;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,13 +32,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Processamento de códigos nos recursos")
-class ProcessTextTest {
+class LexicalServiceTest {
 
-    private ProcessText processText;
+    private LexicalService lexicalService;
 
     @BeforeEach
     void setup() {
-        processText = new ProcessText();
+        lexicalService = new LexicalService();
     }
 
     @SneakyThrows
@@ -46,8 +46,8 @@ class ProcessTextTest {
     @DisplayName("Teste um programa que está nos recursos")
     void testWhenAProgramaOnResource() {
         try (final InputStream resource = getResource("program1.pasc")) {
-            processText.process(resource);
-            final List<Token> tokens = processText.getTokens();
+            lexicalService.process(resource);
+            final List<Token> tokens = lexicalService.getTokens();
             assertEquals(4, tokens.size());
             final Token first = tokens.get(0);
             final Token second = tokens.get(1);
@@ -71,8 +71,8 @@ class ProcessTextTest {
     @DisplayName("Teste um programa que está nos recursos")
     void testWhenAProgramaOnResourceWithCommentLine() {
         try (final InputStream resource = getResource("program2.pasc")) {
-            processText.process(resource);
-            final List<Token> tokens = processText.getTokens();
+            lexicalService.process(resource);
+            final List<Token> tokens = lexicalService.getTokens();
             assertEquals(4, tokens.size());
             final Token first = tokens.get(0);
             assertNotNull(first);
@@ -88,8 +88,8 @@ class ProcessTextTest {
     @DisplayName("Testando o panic mode configurado")
     void testWhenProgramFailsButPanicSaveTheState() {
         try (final InputStream resource = getResource("program3.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(11, tokens.size());
@@ -109,14 +109,14 @@ class ProcessTextTest {
             );
             // Assert Symbol table
             assertAllKeyWorld();
-            assertEquals(KeyWorld.values().length + 3, processText.getSymbolTable().size());
+            assertEquals(KeyWorld.values().length + 3, lexicalService.getSymbolTable().size());
             assertAll(
-                    () -> assertTrue(processText.getSymbolTable().hasKey("var1")),
-                    () -> assertTrue(processText.getSymbolTable().hasKey("v")),
-                    () -> assertTrue(processText.getSymbolTable().hasKey("r2")),
-                    () -> assertTrue(processText.getSymbolTable().hasKey("VAR1")),
-                    () -> assertTrue(processText.getSymbolTable().hasKey("V")),
-                    () -> assertTrue(processText.getSymbolTable().hasKey("R2"))
+                    () -> assertTrue(lexicalService.getSymbolTable().hasKey("var1")),
+                    () -> assertTrue(lexicalService.getSymbolTable().hasKey("v")),
+                    () -> assertTrue(lexicalService.getSymbolTable().hasKey("r2")),
+                    () -> assertTrue(lexicalService.getSymbolTable().hasKey("VAR1")),
+                    () -> assertTrue(lexicalService.getSymbolTable().hasKey("V")),
+                    () -> assertTrue(lexicalService.getSymbolTable().hasKey("R2"))
             );
         }
     }
@@ -124,7 +124,7 @@ class ProcessTextTest {
     private void assertAllKeyWorld() {
         Arrays.stream(KeyWorld.values())
                 .map(KeyWorld::getValue)
-                .forEach(valueOfKeyWorld -> assertTrue(processText.getSymbolTable().hasKey(valueOfKeyWorld)));
+                .forEach(valueOfKeyWorld -> assertTrue(lexicalService.getSymbolTable().hasKey(valueOfKeyWorld)));
     }
 
 
@@ -133,8 +133,8 @@ class ProcessTextTest {
     @DisplayName("Verificando se o programa para a execução com a quantidade de erros configurada no panic mode")
     void testWhenPanicRetryExceeded() {
         try (final InputStream resource = getResource("program4.pasc")) {
-            assertThrows(RuntimeException.class, () -> processText.process(resource));
-            assertEquals(PanicModeConfig.RETRY, processText.getTokens().size());
+            assertThrows(RuntimeException.class, () -> lexicalService.process(resource));
+            assertEquals(PanicModeConfig.RETRY, lexicalService.getTokens().size());
         }
     }
 
@@ -190,8 +190,8 @@ class ProcessTextTest {
     @DisplayName("Teste um programa que está nos recursos")
     void testWhenProgramNotEqualsOperator() {
         try (final InputStream resource = getResource("program5.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(4, tokens.size());
@@ -210,8 +210,8 @@ class ProcessTextTest {
     @DisplayName("Teste um programa Operações entre dois números")
     void testWhenProgramMultOperators() {
         try (final InputStream resource = getResource("program7.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(37, tokens.size());
@@ -264,8 +264,8 @@ class ProcessTextTest {
     @DisplayName("Teste um programa que está nos recursos")
     void testWhenUnclosedString() {
         try (final InputStream resource = getResource("program6.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(2, tokens.size());
@@ -281,8 +281,8 @@ class ProcessTextTest {
     @DisplayName("Teste um programa que irá imprimir o maior número")
     void testWhenCompileAGreaterNumberProgram() {
         try (final InputStream resource = getResource("program8.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(16, tokens.size());
@@ -318,8 +318,8 @@ class ProcessTextTest {
     @DisplayName("Teste um programa que validar caracteres que não são ASCII na string")
     void testWhenCompileANonAsciiCharacter() {
         try (final InputStream resource = getResource("program9.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(4, tokens.size());
@@ -337,8 +337,8 @@ class ProcessTextTest {
     @DisplayName("Teste para validar aceitação de palavras reservas e identificadores tao em maiusculo quanto minusculo")
     void testWhenUseCapsWorlds() {
         try (final InputStream resource = getResource("program10.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(7, tokens.size());
@@ -359,8 +359,8 @@ class ProcessTextTest {
     @DisplayName("Testando operador and dentro de uma condicional")
     void testWhenUseAndWithIfOperator() {
         try (final InputStream resource = getResource("program11.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(15, tokens.size());
@@ -392,8 +392,8 @@ class ProcessTextTest {
     @DisplayName("Testando atribuição de número com ponto flutuante")
     void testWhenAttrSomeFloatVariable() {
         try (final InputStream resource = getResource("program12.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(5, tokens.size());
@@ -416,8 +416,8 @@ class ProcessTextTest {
     @DisplayName("Testando utilizar uma String com enter dentro dela")
     void testWhenUseEmptyStringProgram() {
         try (final InputStream resource = getResource("program14.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(3, tokens.size());
@@ -435,8 +435,8 @@ class ProcessTextTest {
     @DisplayName("Testando um numero com ponto flutuante com encerramento do comando")
     void testWhenFloatNumberHasOtherCommand() {
         try (final InputStream resource = getResource("program15.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(6, tokens.size());
@@ -456,8 +456,8 @@ class ProcessTextTest {
     @DisplayName("Testando Tabulação")
     void testWhenUseAndWithIfElse() {
         try (final InputStream resource = getResource("program13.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
 
@@ -483,8 +483,8 @@ class ProcessTextTest {
     @DisplayName("Testando operador diferente")
     void testWhenDifferent() {
         try (final InputStream resource = getResource("program16.pasc")) {
-            assertDoesNotThrow(() -> processText.process(resource));
-            final List<Token> tokens = assertDoesNotThrow(() -> processText.getTokens());
+            assertDoesNotThrow(() -> lexicalService.process(resource));
+            final List<Token> tokens = assertDoesNotThrow(() -> lexicalService.getTokens());
             assertNotNull(tokens);
             assertFalse(tokens.isEmpty());
             assertEquals(4, tokens.size());

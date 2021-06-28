@@ -1,9 +1,10 @@
-package br.com.unibh.compiler.pasc.lexic;
+package br.com.unibh.compiler.pasc;
 
-import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
+import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.service.LanguageLexer;
-import br.com.unibh.compiler.pasc.lexic.service.ProcessText;
+import br.com.unibh.compiler.pasc.lexic.service.LexicalService;
+import br.com.unibh.compiler.pasc.syntactic.service.SyntacticService;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 
@@ -33,13 +34,14 @@ public class App {
         LanguageLexer.setDefaultLocale(Locale.forLanguageTag("pt-BR"));
         if (args.length > 0) {
             final Path file = Path.of(args[0]);
-            ProcessText processText = new ProcessText();
+            LexicalService lexicalService = new LexicalService();
+            SyntacticService syntacticService = new SyntacticService();
             try (final InputStream inputStream = Files.newInputStream(file)) {
                 log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG008") + MARKED_STRING);
-                processText.process(inputStream, App::showToken);
-            }finally {
+                lexicalService.process(inputStream, syntacticService.andThen(App::showToken));
+            } finally {
                 log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG009") + MARKED_STRING);
-                processText.getSymbolTable()
+                lexicalService.getSymbolTable()
                         .stream()
                         .forEach(o -> log.info(String.format("%s -> %s", o.getLeft(), o.getRight())));
             }
