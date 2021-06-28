@@ -3,6 +3,7 @@ package br.com.unibh.compiler.pasc.lexic.service;
 import br.com.unibh.compiler.pasc.lexic.configuration.FileConfig;
 import br.com.unibh.compiler.pasc.lexic.configuration.PanicModeConfig;
 import br.com.unibh.compiler.pasc.lexic.exceptions.UnexpectedSymbolException;
+import br.com.unibh.compiler.pasc.lexic.model.SpecialTokens;
 import br.com.unibh.compiler.pasc.lexic.model.SymbolTable;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
 import br.com.unibh.compiler.pasc.lexic.model.TokenError;
@@ -137,8 +138,8 @@ public class LexicalService {
         Token token = Token.builder()
                 .column(column)
                 .line(line)
-                .value(FileConfig.EOF_TOKEN_NAME)
-                .name(FileConfig.EOF_TOKEN_NAME)
+                .value(SpecialTokens.EOF.getValue())
+                .name(SpecialTokens.EOF.getTokenName())
                 .build();
         tokens.add(token);
         tokenConsumer.accept(token);

@@ -2,20 +2,25 @@ package br.com.unibh.compiler.pasc.syntactic.grammar;
 
 import br.com.unibh.compiler.pasc.lexic.model.Identifier;
 import br.com.unibh.compiler.pasc.lexic.model.KeyWorld;
-import br.com.unibh.compiler.pasc.lexic.model.Token;
+
+import java.util.Arrays;
+import java.util.LinkedList;
 
 public class ProgramRule extends BaseRule {
 
-    public ProgramRule() {
-        super(
-                new ConsumerTokenRule(KeyWorld.PROGRAM),
-                new ConsumerTokenRule(new Identifier("")),
-                new BodyRule()
-        );
+    public ProgramRule(BaseRule previous) {
+        super(previous);
     }
 
     @Override
-    public void process(Token token) {
-        rules.poll().process(token);
+    public void initRules() {
+        rules = new LinkedList<>(
+                Arrays.asList(
+                        new ConsumerTokenRule(this, KeyWorld.PROGRAM),
+                        new ConsumerTokenRule(this, new Identifier("")),
+                        new BodyRule(this)
+                )
+        );
     }
+
 }
