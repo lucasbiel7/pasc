@@ -17,7 +17,7 @@ public class ProgramRule extends BaseRule {
         rules = new LinkedList<>(
                 Arrays.asList(
                         new ConsumerTokenRule(this, KeyWorld.PROGRAM),
-                        new ConsumerTokenRule(this, new Identifier("")),
+                        new ConsumerTokenRule(this, new Identifier("Nome do programa")),
                         new BodyRule(this)
                 )
         );
