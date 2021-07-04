@@ -1,6 +1,6 @@
 package br.com.unibh.compiler.pasc.simple.syntactic;
 
-import br.com.unibh.compiler.pasc.lexic.model.Identifier;
+import br.com.unibh.compiler.pasc.lexic.model.Constants;
 import br.com.unibh.compiler.pasc.lexic.model.KeyWorld;
 import br.com.unibh.compiler.pasc.lexic.model.Operators;
 import br.com.unibh.compiler.pasc.lexic.model.SpecialTokens;
@@ -10,11 +10,11 @@ import br.com.unibh.compiler.pasc.lexic.model.TokenName;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Queue;
 
 public class Sintatico {
 
-    public static final Identifier DEFAULT_IDENTIFIER = new Identifier("");
     Queue<Token> tokens;
 
     private Token tokenAtual;
@@ -34,20 +34,18 @@ public class Sintatico {
 
     private void prog() {
         consumir(KeyWorld.PROGRAM);
-        consumir(DEFAULT_IDENTIFIER);
+        consumir(Constants.IDENTIFIER);
         body();
     }
 
     private void body() {
         declList();
-        consumir(Symbols.SMB_OBC);
-        stmtList();
-        consumir(Symbols.SMB_CBC);
+        blockCode();
     }
 
     private void stmtList() {
         //Validar os first de stmt
-        if (ehToken(DEFAULT_IDENTIFIER, KeyWorld.IF, KeyWorld.WHILE, KeyWorld.READ, KeyWorld.WRITE)) {
+        if (ehToken(Constants.IDENTIFIER, KeyWorld.IF, KeyWorld.WHILE, KeyWorld.READ, KeyWorld.WRITE)) {
             stmt();
             consumir(Symbols.SMB_SEM);
             stmtList();
@@ -56,7 +54,7 @@ public class Sintatico {
     }
 
     private void stmt() {
-        if (ehToken(DEFAULT_IDENTIFIER)) {
+        if (ehToken(Constants.IDENTIFIER)) {
             assignStmt();
         } else if (ehToken(KeyWorld.IF)) {
             ifStmt();
@@ -72,47 +70,165 @@ public class Sintatico {
     }
 
     private void writeStmt() {
-
+        consumir(KeyWorld.WRITE);
+        simpleExpr();
     }
 
     private void readStmt() {
-
+        consumir(KeyWorld.READ);
+        consumir(Constants.IDENTIFIER);
     }
 
     private void whileStmt() {
+        stmtPrefix();
+        blockCode();
+    }
+
+    private void stmtPrefix() {
+        consumir(KeyWorld.WHILE);
+        expressionInParenteses();
     }
 
     private void ifStmt() {
         consumir(KeyWorld.IF);
+        expressionInParenteses();
+        blockCode();
+        ifStmtLinha();
+    }
+
+    private void expressionInParenteses() {
         consumir(Symbols.SMB_OPA);
         expression();
         consumir(Symbols.SMB_CPA);
+    }
+
+    private void blockCode() {
         consumir(Symbols.SMB_OBC);
         stmtList();
         consumir(Symbols.SMB_CBC);
-        ifStmtLinha();
     }
 
     private void ifStmtLinha() {
         if (ehToken(KeyWorld.ELSE)) {
             consumir(KeyWorld.ELSE);
-            consumir(Symbols.SMB_OBC);
-            stmtList();
-            consumir(Symbols.SMB_CBC);
+            blockCode();
         }
         //segue o baile, transicao em vazio
     }
 
     private void expression() {
+        simpleExpr();
+        expressionLine();
+    }
+
+    private void expressionLine() {
+        logOp();
+        simpleExpr();
+        expressionLine();
+    }
+
+    private void logOp() {
+        consumirOr("Operador inválido para unir expressões, esperado and ou or",
+                KeyWorld.AND,
+                KeyWorld.OR);
     }
 
     private void assignStmt() {
-        consumir(DEFAULT_IDENTIFIER);
+        consumir(Constants.IDENTIFIER);
         consumir(Operators.OP_ATRIB);
         simpleExpr();
     }
 
     private void simpleExpr() {
+        term();
+        simpleExprLine();
+    }
+
+    private void simpleExprLine() {
+        if (ehToken(Operators.OP_EQ, Operators.OP_GT, Operators.OP_GE, Operators.OP_LT, Operators.OP_LE, Operators.OP_NE)) {
+            relop();
+            term();
+            simpleExprLine();
+        }
+        // segue o baile, transicao em vazio
+    }
+
+    private void relop() {
+        consumirOr("Operadores inválidos",
+                Operators.OP_EQ,
+                Operators.OP_GT,
+                Operators.OP_GE,
+                Operators.OP_LT,
+                Operators.OP_LE,
+                Operators.OP_NE
+        );
+    }
+
+
+    private void term() {
+        factorB();
+        termLine();
+    }
+
+    private void termLine() {
+        if (ehToken(Operators.OP_AD, Operators.OP_MIN)) {
+            addOp();
+            factorB();
+            termLine();
+        }
+    }
+
+    private void addOp() {
+        consumirOr("Operador inválido, utilize + ou - ",
+                Operators.OP_AD,
+                Operators.OP_MIN
+        );
+    }
+
+    private void factorB() {
+        factorA();
+        factorBLine();
+    }
+
+    private void factorBLine() {
+        if (ehToken(Operators.OP_MUL, Operators.OP_DIV)) {
+            mulop();
+            factorA();
+            factorBLine();
+        }
+    }
+
+    private void mulop() {
+        consumirOr("Operador inválido, utilize * ou / ",
+                Operators.OP_MUL,
+                Operators.OP_DIV
+        );
+    }
+
+    private void factorA() {
+        if (ehToken(KeyWorld.NOT)) {
+            consumir(KeyWorld.NOT);
+        }
+        factor();
+    }
+
+    private void factor() {
+        if (ehToken(Constants.IDENTIFIER)) {
+            consumir(Constants.IDENTIFIER);
+        } else if (ehToken(Symbols.SMB_OPA)) {
+            expressionInParenteses();
+        } else if (ehToken(Constants.NUM_CONST, Constants.CHAR_CONST)) {
+            constant();
+        } else {
+            enviaErroSintatico("Fator inválido!");
+        }
+    }
+
+    private void constant() {
+        consumirOr("Constante era esperada",
+                Constants.NUM_CONST,
+                Constants.CHAR_CONST
+        );
     }
 
     private void declList() {
@@ -130,7 +246,7 @@ public class Sintatico {
     }
 
     private void idList() {
-        consumir(DEFAULT_IDENTIFIER);
+        consumir(Constants.IDENTIFIER);
         idListLinha();
     }
 
@@ -169,11 +285,17 @@ public class Sintatico {
         proximoToken();
     }
 
+    void consumirOr(String msgFail, TokenName... tokens) {
+        final Optional<TokenName> token = Arrays.stream(tokens)
+                .filter(this::ehToken)
+                .findFirst();
+        token.ifPresentOrElse(this::consumir, () -> enviaErroSintatico(msgFail));
+    }
+
     private boolean ehToken(TokenName tokenName) {
         return tokenAtual.getName().equals(tokenName.getTokenName());
     }
 
-    @SafeVarargs
     private boolean ehToken(TokenName... tokenName) {
         return Arrays.stream(tokenName).anyMatch(this::ehToken);
     }
