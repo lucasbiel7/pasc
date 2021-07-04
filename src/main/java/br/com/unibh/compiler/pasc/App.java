@@ -4,6 +4,7 @@ import br.com.unibh.compiler.pasc.lexic.model.Token;
 import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.service.LanguageLexer;
 import br.com.unibh.compiler.pasc.lexic.service.LexicalService;
+import br.com.unibh.compiler.pasc.simple.syntactic.Sintatico;
 import br.com.unibh.compiler.pasc.syntactic.service.SyntacticService;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -12,7 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedList;
 import java.util.Locale;
+import java.util.Queue;
 import java.util.logging.LogManager;
 
 @Log
@@ -36,15 +39,19 @@ public class App {
             final Path file = Path.of(args[0]);
             LexicalService lexicalService = new LexicalService();
             SyntacticService syntacticService = new SyntacticService();
+            Queue<Token> tokens = new LinkedList<>();
             try (final InputStream inputStream = Files.newInputStream(file)) {
                 log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG008") + MARKED_STRING);
-                lexicalService.process(inputStream, syntacticService.andThen(App::showToken));
+//                syntacticService.andThen(App::showToken)
+                lexicalService.process(inputStream, tokens::add);
             } finally {
                 log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG009") + MARKED_STRING);
                 lexicalService.getSymbolTable()
                         .stream()
                         .forEach(o -> log.info(String.format("%s -> %s", o.getLeft(), o.getRight())));
             }
+            Sintatico sintatico = new Sintatico(tokens);
+            sintatico.analisar();
         } else {
             log.severe(LanguageLexer.getInstance().message("MSG004"));
         }

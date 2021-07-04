@@ -19,7 +19,6 @@ public class BodyRule extends BaseRule {
                         //regra de declList
                         new ConsumerTokenRule(this, Symbols.SMB_OBC),
                         //regra de stmt-list
-                        new ConsumerTokenRule(this, Symbols.SMB_CBC),
                         new ConsumerTokenRule(this, Symbols.SMB_CBC)
                 )
         );

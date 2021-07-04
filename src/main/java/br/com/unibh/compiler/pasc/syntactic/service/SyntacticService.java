@@ -29,7 +29,6 @@ public class SyntacticService implements Consumer<Token> {
     @Override
     public void accept(Token token) {
         //processar o que a gente acha dele?
-        log.warning("Lexico fala token: " + token.getName());
         current = current.process(token);
         if (Objects.isNull(current)) {
             log.info("Análise léxica finalizada");
