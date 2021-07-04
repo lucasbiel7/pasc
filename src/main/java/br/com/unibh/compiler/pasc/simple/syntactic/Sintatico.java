@@ -6,6 +6,7 @@ import br.com.unibh.compiler.pasc.lexic.model.Operators;
 import br.com.unibh.compiler.pasc.lexic.model.SpecialTokens;
 import br.com.unibh.compiler.pasc.lexic.model.Symbols;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
+import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.model.TokenName;
 
 import java.text.MessageFormat;
@@ -122,9 +123,11 @@ public class Sintatico {
     }
 
     private void expressionLine() {
-        logOp();
-        simpleExpr();
-        expressionLine();
+        if (ehToken(KeyWorld.AND, KeyWorld.OR)) {
+            logOp();
+            simpleExpr();
+            expressionLine();
+        }
     }
 
     private void logOp() {
@@ -302,6 +305,10 @@ public class Sintatico {
 
     private void proximoToken() {
         tokenAtual = tokens.poll();
+        //skip tokens de erro lexico
+        if (tokenAtual instanceof TokenError) {
+            proximoToken();
+        }
     }
 
 }
