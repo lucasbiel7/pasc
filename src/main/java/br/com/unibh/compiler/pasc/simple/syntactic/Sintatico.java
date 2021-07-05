@@ -48,7 +48,7 @@ public class Sintatico {
 
     private void prog() {
         consumir(KeyWorld.PROGRAM);
-        consumirAlterarTipo(Constants.IDENTIFIER, SyntacticType.VOID);
+        consumir(Constants.IDENTIFIER, SyntacticType.VOID);
         body();
     }
 
@@ -144,18 +144,22 @@ public class Sintatico {
     }
 
     private void logOp() {
-        consumirOr("Operador inválido para unir expressões, esperado and ou or",
+        consumir("Operador inválido para unir expressões, esperado and ou or",
                 KeyWorld.AND,
                 KeyWorld.OR);
     }
 
     private void assignStmt() {
-        consumirValidateTS(Constants.IDENTIFIER);
+        final SyntacticType typeIdentifier = consumirValidateTS(Constants.IDENTIFIER);
         consumir(Operators.OP_ATRIB);
         simpleExpr();
+        if (typeIdentifier != simpleExpression.getType()) {
+            enviaErroSemantico("Atribuição incompatível");
+        }
     }
 
 
+    //TODO precisa retorna o tipo.
     private void simpleExpr() {
         term();
         simpleExprLine();
@@ -171,7 +175,7 @@ public class Sintatico {
     }
 
     private void relop() {
-        consumirOr("Operadores inválidos",
+        consumir("Operadores inválidos",
                 Operators.OP_EQ,
                 Operators.OP_GT,
                 Operators.OP_GE,
@@ -196,7 +200,7 @@ public class Sintatico {
     }
 
     private void addOp() {
-        consumirOr("Operador inválido, utilize + ou - ",
+        consumir("Operador inválido, utilize + ou - ",
                 Operators.OP_AD,
                 Operators.OP_MIN
         );
@@ -216,7 +220,7 @@ public class Sintatico {
     }
 
     private void mulop() {
-        consumirOr("Operador inválido, utilize * ou / ",
+        consumir("Operador inválido, utilize * ou / ",
                 Operators.OP_MUL,
                 Operators.OP_DIV
         );
@@ -242,7 +246,7 @@ public class Sintatico {
     }
 
     private void constant() {
-        consumirOr("Constante era esperada",
+        consumir("Constante era esperada",
                 Constants.NUM_CONST,
                 Constants.CHAR_CONST
         );
@@ -263,7 +267,7 @@ public class Sintatico {
     }
 
     private void idList() {
-        consumirAlterarTipo(Constants.IDENTIFIER, idList.getType());
+        consumir(Constants.IDENTIFIER, idList.getType());
         idListLinha();
     }
 
@@ -289,13 +293,13 @@ public class Sintatico {
 
     //TODO melhorar tratamento de exceção
     private void enviaErroSintatico(String mensagem) {
-        throw new RuntimeException(MessageFormat.format("[{0},{1}] Erro analise sintática: {2}",
+        throw new RuntimeException(MessageFormat.format("[{0},{1}] Erro análise sintática: {2}",
                 tokenAtual.getLine(), tokenAtual.getColumn(), mensagem)
         );
     }
 
     private void enviaErroSemantico(String mensagem) {
-        throw new RuntimeException(MessageFormat.format("[{0},{1}] Erro analise semântica: {2}",
+        throw new RuntimeException(MessageFormat.format("[{0},{1}] Erro análise semântica: {2}",
                 tokenAtual.getLine(), tokenAtual.getColumn(), mensagem)
         );
     }
@@ -323,14 +327,14 @@ public class Sintatico {
         return token.getType();
     }
 
-    private void consumirAlterarTipo(TokenName tokenName, SyntacticType syntacticType) {
+    private void consumir(TokenName tokenName, SyntacticType syntacticType) {
         var tempToken = tokenAtual;
         consumir(tokenName);
         symbolTable.get(tempToken.getValue()).setType(syntacticType);
     }
 
 
-    void consumirOr(String msgFail, TokenName... tokens) {
+    void consumir(String msgFail, TokenName... tokens) {
         final Optional<TokenName> token = Arrays.stream(tokens)
                 .filter(this::ehToken)
                 .findFirst();

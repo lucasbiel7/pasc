@@ -36,7 +36,7 @@ public class SymbolTable {
     }
 
     public void add(String value, Token token) {
-        if (symbols.containsKey(value.toLowerCase())) {
+        if (hasKey(value)) {
             final Token pastToken = symbols.get(value.toLowerCase());
             // Ajuste para apenas atualizar linha e coluna do token na tabela de simbolo, assim evitar apagando o tipo dele
             pastToken.setColumn(token.getColumn());
