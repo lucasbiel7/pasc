@@ -4,7 +4,7 @@ import br.com.unibh.compiler.pasc.lexic.model.Token;
 import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.service.LanguageLexer;
 import br.com.unibh.compiler.pasc.lexic.service.LexicalService;
-import br.com.unibh.compiler.pasc.simple.syntactic.Sintatico;
+import br.com.unibh.compiler.pasc.simple.syntactic.RecursiveSyntactic;
 import br.com.unibh.compiler.pasc.syntactic.service.SyntacticService;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -52,8 +52,8 @@ public class App {
                         .stream()
                         .forEach(o -> log.info(String.format("%s -> %s", o.getLeft(), o.getRight())));
             }
-            Sintatico sintatico = new Sintatico(tokens, lexicalService.getSymbolTable());
-            sintatico.analisar();
+            RecursiveSyntactic recursiveSyntactic = new RecursiveSyntactic(tokens, lexicalService.getSymbolTable());
+            recursiveSyntactic.analyse();
         } else {
             log.severe(LanguageLexer.getInstance().message("MSG004"));
         }

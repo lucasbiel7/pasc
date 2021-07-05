@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 
-public class Sintatico {
+public class RecursiveSyntactic {
 
     private Queue<Token> tokens;
 
@@ -33,22 +33,22 @@ public class Sintatico {
     private Node expression;
 
 
-    public Sintatico(Queue<Token> tokens, SymbolTable symbolTable) {
+    public RecursiveSyntactic(Queue<Token> tokens, SymbolTable symbolTable) {
         this.tokens = tokens;
         this.symbolTable = symbolTable;
     }
 
-    public void analisar() {
+    public void analyse() {
         //carrega o primeiro token
-        proximoToken();
+        nextToken();
         //primeira regra aqui
         prog();
-        consumir(SpecialTokens.EOF);
+        consume(SpecialTokens.EOF);
     }
 
     private void prog() {
-        consumir(KeyWorld.PROGRAM);
-        consumir(Constants.IDENTIFIER, SyntacticType.VOID);
+        consume(KeyWorld.PROGRAM);
+        consume(Constants.IDENTIFIER, SyntacticType.VOID);
         body();
     }
 
@@ -59,38 +59,38 @@ public class Sintatico {
 
     private void stmtList() {
         //Validar os first de stmt
-        if (ehToken(Constants.IDENTIFIER, KeyWorld.IF, KeyWorld.WHILE, KeyWorld.READ, KeyWorld.WRITE)) {
+        if (isToken(Constants.IDENTIFIER, KeyWorld.IF, KeyWorld.WHILE, KeyWorld.READ, KeyWorld.WRITE)) {
             stmt();
-            consumir(Symbols.SMB_SEM);
+            consume(Symbols.SMB_SEM);
             stmtList();
         }
         // segue o baile, transição em vazio
     }
 
     private void stmt() {
-        if (ehToken(Constants.IDENTIFIER)) {
+        if (isToken(Constants.IDENTIFIER)) {
             assignStmt();
-        } else if (ehToken(KeyWorld.IF)) {
+        } else if (isToken(KeyWorld.IF)) {
             ifStmt();
-        } else if (ehToken(KeyWorld.WHILE)) {
+        } else if (isToken(KeyWorld.WHILE)) {
             whileStmt();
-        } else if (ehToken(KeyWorld.READ)) {
+        } else if (isToken(KeyWorld.READ)) {
             readStmt();
-        } else if (ehToken(KeyWorld.WRITE)) {
+        } else if (isToken(KeyWorld.WRITE)) {
             writeStmt();
         } else {
-            enviaErroSintatico("O Comando é inválido!");
+            erroSyntactical("O Comando é inválido!");
         }
     }
 
     private void writeStmt() {
-        consumir(KeyWorld.WRITE);
+        consume(KeyWorld.WRITE);
         simpleExpr();
     }
 
     private void readStmt() {
-        consumir(KeyWorld.READ);
-        consumirValidateTS(Constants.IDENTIFIER);
+        consume(KeyWorld.READ);
+        consumeWithValidateTableSymbol(Constants.IDENTIFIER);
     }
 
     private void whileStmt() {
@@ -99,32 +99,32 @@ public class Sintatico {
     }
 
     private void stmtPrefix() {
-        consumir(KeyWorld.WHILE);
+        consume(KeyWorld.WHILE);
         expressionInParenteses();
     }
 
     private void ifStmt() {
-        consumir(KeyWorld.IF);
+        consume(KeyWorld.IF);
         expressionInParenteses();
         blockCode();
         ifStmtLinha();
     }
 
     private void expressionInParenteses() {
-        consumir(Symbols.SMB_OPA);
+        consume(Symbols.SMB_OPA);
         expression();
-        consumir(Symbols.SMB_CPA);
+        consume(Symbols.SMB_CPA);
     }
 
     private void blockCode() {
-        consumir(Symbols.SMB_OBC);
+        consume(Symbols.SMB_OBC);
         stmtList();
-        consumir(Symbols.SMB_CBC);
+        consume(Symbols.SMB_CBC);
     }
 
     private void ifStmtLinha() {
-        if (ehToken(KeyWorld.ELSE)) {
-            consumir(KeyWorld.ELSE);
+        if (isToken(KeyWorld.ELSE)) {
+            consume(KeyWorld.ELSE);
             blockCode();
         }
         //segue o baile, transicao em vazio
@@ -136,7 +136,7 @@ public class Sintatico {
     }
 
     private void expressionLine() {
-        if (ehToken(KeyWorld.AND, KeyWorld.OR)) {
+        if (isToken(KeyWorld.AND, KeyWorld.OR)) {
             logOp();
             simpleExpr();
             expressionLine();
@@ -144,17 +144,17 @@ public class Sintatico {
     }
 
     private void logOp() {
-        consumir("Operador inválido para unir expressões, esperado and ou or",
+        consume("Operador inválido para unir expressões, esperado and ou or",
                 KeyWorld.AND,
                 KeyWorld.OR);
     }
 
     private void assignStmt() {
-        final SyntacticType typeIdentifier = consumirValidateTS(Constants.IDENTIFIER);
-        consumir(Operators.OP_ATRIB);
+        final SyntacticType typeIdentifier = consumeWithValidateTableSymbol(Constants.IDENTIFIER);
+        consume(Operators.OP_ATRIB);
         simpleExpr();
         if (typeIdentifier != simpleExpression.getType()) {
-            enviaErroSemantico("Atribuição incompatível");
+            erroSemantic("Atribuição incompatível");
         }
     }
 
@@ -166,7 +166,7 @@ public class Sintatico {
     }
 
     private void simpleExprLine() {
-        if (ehToken(Operators.OP_EQ, Operators.OP_GT, Operators.OP_GE, Operators.OP_LT, Operators.OP_LE, Operators.OP_NE)) {
+        if (isToken(Operators.OP_EQ, Operators.OP_GT, Operators.OP_GE, Operators.OP_LT, Operators.OP_LE, Operators.OP_NE)) {
             relop();
             term();
             simpleExprLine();
@@ -175,7 +175,7 @@ public class Sintatico {
     }
 
     private void relop() {
-        consumir("Operadores inválidos",
+        consume("Operadores inválidos",
                 Operators.OP_EQ,
                 Operators.OP_GT,
                 Operators.OP_GE,
@@ -192,7 +192,7 @@ public class Sintatico {
     }
 
     private void termLine() {
-        if (ehToken(Operators.OP_AD, Operators.OP_MIN)) {
+        if (isToken(Operators.OP_AD, Operators.OP_MIN)) {
             addOp();
             factorB();
             termLine();
@@ -200,7 +200,7 @@ public class Sintatico {
     }
 
     private void addOp() {
-        consumir("Operador inválido, utilize + ou - ",
+        consume("Operador inválido, utilize + ou - ",
                 Operators.OP_AD,
                 Operators.OP_MIN
         );
@@ -212,7 +212,7 @@ public class Sintatico {
     }
 
     private void factorBLine() {
-        if (ehToken(Operators.OP_MUL, Operators.OP_DIV)) {
+        if (isToken(Operators.OP_MUL, Operators.OP_DIV)) {
             mulop();
             factorA();
             factorBLine();
@@ -220,42 +220,42 @@ public class Sintatico {
     }
 
     private void mulop() {
-        consumir("Operador inválido, utilize * ou / ",
+        consume("Operador inválido, utilize * ou / ",
                 Operators.OP_MUL,
                 Operators.OP_DIV
         );
     }
 
     private void factorA() {
-        if (ehToken(KeyWorld.NOT)) {
-            consumir(KeyWorld.NOT);
+        if (isToken(KeyWorld.NOT)) {
+            consume(KeyWorld.NOT);
         }
         factor();
     }
 
     private void factor() {
-        if (ehToken(Constants.IDENTIFIER)) {
-            consumir(Constants.IDENTIFIER);
-        } else if (ehToken(Symbols.SMB_OPA)) {
+        if (isToken(Constants.IDENTIFIER)) {
+            consume(Constants.IDENTIFIER);
+        } else if (isToken(Symbols.SMB_OPA)) {
             expressionInParenteses();
-        } else if (ehToken(Constants.NUM_CONST, Constants.CHAR_CONST)) {
+        } else if (isToken(Constants.NUM_CONST, Constants.CHAR_CONST)) {
             constant();
         } else {
-            enviaErroSintatico("Fator inválido!");
+            erroSyntactical("Fator inválido!");
         }
     }
 
     private void constant() {
-        consumir("Constante era esperada",
+        consume("Constante era esperada",
                 Constants.NUM_CONST,
                 Constants.CHAR_CONST
         );
     }
 
     private void declList() {
-        if (ehToken(KeyWorld.NUM, KeyWorld.CHAR)) {
+        if (isToken(KeyWorld.NUM, KeyWorld.CHAR)) {
             decl();
-            consumir(Symbols.SMB_SEM);
+            consume(Symbols.SMB_SEM);
             declList();
         }
         // pode passar batido, porque ele aceita vazio
@@ -267,93 +267,93 @@ public class Sintatico {
     }
 
     private void idList() {
-        consumir(Constants.IDENTIFIER, idList.getType());
+        consume(Constants.IDENTIFIER, idList.getType());
         idListLinha();
     }
 
     private void idListLinha() {
-        if (ehToken(Symbols.SMB_COM)) {
-            consumir(Symbols.SMB_COM);
+        if (isToken(Symbols.SMB_COM)) {
+            consume(Symbols.SMB_COM);
             idList();
         }
         // Segue o baile, transição em vazio
     }
 
     private void type() {
-        if (ehToken(KeyWorld.NUM)) {
-            consumir(KeyWorld.NUM);
+        if (isToken(KeyWorld.NUM)) {
+            consume(KeyWorld.NUM);
             idList = new Node(SyntacticType.NUM);
-        } else if (ehToken(KeyWorld.CHAR)) {
-            consumir(KeyWorld.CHAR);
+        } else if (isToken(KeyWorld.CHAR)) {
+            consume(KeyWorld.CHAR);
             idList = new Node(SyntacticType.CHAR);
         } else {
-            enviaErroSintatico(MessageFormat.format("O token {0} não é um tipo válido", tokenAtual.getValue()));
+            erroSyntactical(MessageFormat.format("O token {0} não é um tipo válido", tokenAtual.getValue()));
         }
     }
 
     //TODO melhorar tratamento de exceção
-    private void enviaErroSintatico(String mensagem) {
+    private void erroSyntactical(String mensagem) {
         throw new RuntimeException(MessageFormat.format("[{0},{1}] Erro análise sintática: {2}",
                 tokenAtual.getLine(), tokenAtual.getColumn(), mensagem)
         );
     }
 
-    private void enviaErroSemantico(String mensagem) {
+    private void erroSemantic(String mensagem) {
         throw new RuntimeException(MessageFormat.format("[{0},{1}] Erro análise semântica: {2}",
                 tokenAtual.getLine(), tokenAtual.getColumn(), mensagem)
         );
     }
 
-    private void consumir(TokenName tokenName) {
-        if (!ehToken(tokenName)) {
-            enviaErroSintatico(MessageFormat.format(
+    private void consume(TokenName tokenName) {
+        if (!isToken(tokenName)) {
+            erroSyntactical(MessageFormat.format(
                     "token esperado {0} = {1}",
                     tokenName.getTokenName(),
                     tokenName.getValue()));
         }
-        proximoToken();
+        nextToken();
     }
 
-    private SyntacticType consumirValidateTS(TokenName tokeName) {
+    private SyntacticType consumeWithValidateTableSymbol(TokenName tokeName) {
         Token temp = tokenAtual;
         final Token token = symbolTable.get(temp.getValue());
         if (Objects.isNull(token.getType())) {
-            enviaErroSemantico(MessageFormat.format(
+            erroSemantic(MessageFormat.format(
                     "O identificador {0} não foi declarado",
                     token.getValue()
             ));
         }
-        consumir(tokeName);
+        consume(tokeName);
         return token.getType();
     }
 
-    private void consumir(TokenName tokenName, SyntacticType syntacticType) {
+    private void consume(TokenName tokenName, SyntacticType syntacticType) {
         var tempToken = tokenAtual;
-        consumir(tokenName);
+        consume(tokenName);
         symbolTable.get(tempToken.getValue()).setType(syntacticType);
     }
 
 
-    void consumir(String msgFail, TokenName... tokens) {
+    void consume(String msgFail, TokenName... tokens) {
         final Optional<TokenName> token = Arrays.stream(tokens)
-                .filter(this::ehToken)
+                .filter(this::isToken)
                 .findFirst();
-        token.ifPresentOrElse(this::consumir, () -> enviaErroSintatico(msgFail));
+        token.ifPresentOrElse(this::consume, () -> erroSyntactical(msgFail));
     }
 
-    private boolean ehToken(TokenName tokenName) {
+    private boolean isToken(TokenName tokenName) {
         return tokenAtual.getName().equals(tokenName.getTokenName());
     }
 
-    private boolean ehToken(TokenName... tokenName) {
-        return Arrays.stream(tokenName).anyMatch(this::ehToken);
+    private boolean isToken(TokenName... tokenName) {
+        return Arrays.stream(tokenName).anyMatch(this::isToken);
     }
 
-    private void proximoToken() {
+    private void nextToken() {
         tokenAtual = tokens.poll();
         //skip tokens de erro lexico
         if (tokenAtual instanceof TokenError) {
-            proximoToken();
+            nextToken();
         }
     }
 
