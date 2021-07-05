@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Queue;
+import java.util.function.Consumer;
 import java.util.logging.LogManager;
 
 @Log
@@ -42,15 +43,16 @@ public class App {
             Queue<Token> tokens = new LinkedList<>();
             try (final InputStream inputStream = Files.newInputStream(file)) {
                 log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG008") + MARKED_STRING);
+                final Consumer<Token> showToken = App::showToken;
 //                syntacticService.andThen(App::showToken)
-                lexicalService.process(inputStream, tokens::add);
+                lexicalService.process(inputStream, showToken.andThen(tokens::add));
             } finally {
                 log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG009") + MARKED_STRING);
                 lexicalService.getSymbolTable()
                         .stream()
                         .forEach(o -> log.info(String.format("%s -> %s", o.getLeft(), o.getRight())));
             }
-            Sintatico sintatico = new Sintatico(tokens);
+            Sintatico sintatico = new Sintatico(tokens, lexicalService.getSymbolTable());
             sintatico.analisar();
         } else {
             log.severe(LanguageLexer.getInstance().message("MSG004"));

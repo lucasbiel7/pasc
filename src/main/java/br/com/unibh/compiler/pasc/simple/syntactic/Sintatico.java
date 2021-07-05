@@ -4,25 +4,38 @@ import br.com.unibh.compiler.pasc.lexic.model.Constants;
 import br.com.unibh.compiler.pasc.lexic.model.KeyWorld;
 import br.com.unibh.compiler.pasc.lexic.model.Operators;
 import br.com.unibh.compiler.pasc.lexic.model.SpecialTokens;
+import br.com.unibh.compiler.pasc.lexic.model.SymbolTable;
 import br.com.unibh.compiler.pasc.lexic.model.Symbols;
 import br.com.unibh.compiler.pasc.lexic.model.Token;
 import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.model.TokenName;
+import br.com.unibh.compiler.pasc.syntactic.model.Node;
+import br.com.unibh.compiler.pasc.syntactic.model.SyntacticType;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 
 public class Sintatico {
 
-    Queue<Token> tokens;
+    private Queue<Token> tokens;
 
     private Token tokenAtual;
 
+    private SymbolTable symbolTable;
+    /**
+     * Nós para controlar as avaliações semanticas
+     */
+    private Node idList;
+    private Node simpleExpression;
+    private Node expression;
 
-    public Sintatico(Queue<Token> tokens) {
+
+    public Sintatico(Queue<Token> tokens, SymbolTable symbolTable) {
         this.tokens = tokens;
+        this.symbolTable = symbolTable;
     }
 
     public void analisar() {
@@ -35,7 +48,7 @@ public class Sintatico {
 
     private void prog() {
         consumir(KeyWorld.PROGRAM);
-        consumir(Constants.IDENTIFIER);
+        consumirAlterarTipo(Constants.IDENTIFIER, SyntacticType.VOID);
         body();
     }
 
@@ -77,7 +90,7 @@ public class Sintatico {
 
     private void readStmt() {
         consumir(KeyWorld.READ);
-        consumir(Constants.IDENTIFIER);
+        consumirValidateTS(Constants.IDENTIFIER);
     }
 
     private void whileStmt() {
@@ -137,10 +150,11 @@ public class Sintatico {
     }
 
     private void assignStmt() {
-        consumir(Constants.IDENTIFIER);
+        consumirValidateTS(Constants.IDENTIFIER);
         consumir(Operators.OP_ATRIB);
         simpleExpr();
     }
+
 
     private void simpleExpr() {
         term();
@@ -249,7 +263,7 @@ public class Sintatico {
     }
 
     private void idList() {
-        consumir(Constants.IDENTIFIER);
+        consumirAlterarTipo(Constants.IDENTIFIER, idList.getType());
         idListLinha();
     }
 
@@ -264,8 +278,10 @@ public class Sintatico {
     private void type() {
         if (ehToken(KeyWorld.NUM)) {
             consumir(KeyWorld.NUM);
+            idList = new Node(SyntacticType.NUM);
         } else if (ehToken(KeyWorld.CHAR)) {
             consumir(KeyWorld.CHAR);
+            idList = new Node(SyntacticType.CHAR);
         } else {
             enviaErroSintatico(MessageFormat.format("O token {0} não é um tipo válido", tokenAtual.getValue()));
         }
@@ -274,6 +290,12 @@ public class Sintatico {
     //TODO melhorar tratamento de exceção
     private void enviaErroSintatico(String mensagem) {
         throw new RuntimeException(MessageFormat.format("[{0},{1}] Erro analise sintática: {2}",
+                tokenAtual.getLine(), tokenAtual.getColumn(), mensagem)
+        );
+    }
+
+    private void enviaErroSemantico(String mensagem) {
+        throw new RuntimeException(MessageFormat.format("[{0},{1}] Erro analise semântica: {2}",
                 tokenAtual.getLine(), tokenAtual.getColumn(), mensagem)
         );
     }
@@ -287,6 +309,26 @@ public class Sintatico {
         }
         proximoToken();
     }
+
+    private SyntacticType consumirValidateTS(TokenName tokeName) {
+        Token temp = tokenAtual;
+        final Token token = symbolTable.get(temp.getValue());
+        if (Objects.isNull(token.getType())) {
+            enviaErroSemantico(MessageFormat.format(
+                    "O identificador {0} não foi declarado",
+                    token.getValue()
+            ));
+        }
+        consumir(tokeName);
+        return token.getType();
+    }
+
+    private void consumirAlterarTipo(TokenName tokenName, SyntacticType syntacticType) {
+        var tempToken = tokenAtual;
+        consumir(tokenName);
+        symbolTable.get(tempToken.getValue()).setType(syntacticType);
+    }
+
 
     void consumirOr(String msgFail, TokenName... tokens) {
         final Optional<TokenName> token = Arrays.stream(tokens)

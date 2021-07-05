@@ -36,10 +36,26 @@ public class SymbolTable {
     }
 
     public void add(String value, Token token) {
-        symbols.put(value.toLowerCase(), token);
+        if (symbols.containsKey(value.toLowerCase())) {
+            final Token pastToken = symbols.get(value.toLowerCase());
+            // Ajuste para apenas atualizar linha e coluna do token na tabela de simbolo, assim evitar apagando o tipo dele
+            pastToken.setColumn(token.getColumn());
+            pastToken.setLine(token.getLine());
+        } else {
+            symbols.put(value.toLowerCase(), Token.builder()
+                    .name(token.getName())
+                    .value(token.getValue())
+                    .line(token.getLine())
+                    .column(token.getColumn())
+                    .build());
+        }
     }
 
     public boolean hasKey(String key) {
         return this.symbols.containsKey(key.toLowerCase());
+    }
+
+    public Token get(String value) {
+        return symbols.get(value.toLowerCase());
     }
 }
