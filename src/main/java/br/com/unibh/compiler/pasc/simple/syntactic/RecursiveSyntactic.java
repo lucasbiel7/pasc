@@ -154,7 +154,7 @@ public class RecursiveSyntactic {
         final Node simpleExpr = simpleExpr();
         final Node expressionLine = expressionLine();
         if (expressionLine.getType() == SyntacticType.VOID) {
-            expressionLine.setType(simpleExpr.getType());
+            expression.setType(simpleExpr.getType());
         } else if (expressionLine.getType() == simpleExpr.getType() && simpleExpr.getType() == SyntacticType.BOOL) {
             expression.setType(SyntacticType.BOOL);
         } else {
