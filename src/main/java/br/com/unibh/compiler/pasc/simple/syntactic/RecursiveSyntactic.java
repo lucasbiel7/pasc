@@ -92,7 +92,10 @@ public class RecursiveSyntactic {
 
     private void writeStmt() {
         consume(KeyWorld.WRITE);
-        simpleExpr();
+        final Node simpleExpr = simpleExpr();
+        if (simpleExpr.getType() != SyntacticType.CHAR && simpleExpr.getType() != SyntacticType.NUM) {
+            erroSemantic("Incompatibilidade para impressão de valores, deve ser num ou char");
+        }
     }
 
     private void readStmt() {
@@ -107,14 +110,22 @@ public class RecursiveSyntactic {
 
     private void stmtPrefix() {
         consume(KeyWorld.WHILE);
-        expressionInParenteses();
+        final Node expression = expressionInParenteses();
+        validateExpressionLogic(expression);
     }
 
     private void ifStmt() {
         consume(KeyWorld.IF);
-        expressionInParenteses();
+        final Node expression = expressionInParenteses();
+        validateExpressionLogic(expression);
         blockCode();
         ifStmtLinha();
+    }
+
+    private void validateExpressionLogic(Node expression) {
+        if (expression.getType() != SyntacticType.BOOL) {
+            erroSemantic("Expressão lógica mal formada");
+        }
     }
 
     private Node expressionInParenteses() {
@@ -140,17 +151,33 @@ public class RecursiveSyntactic {
 
     private Node expression() {
         Node expression = new Node();
-        simpleExpr();
-        expressionLine();
+        final Node simpleExpr = simpleExpr();
+        final Node expressionLine = expressionLine();
+        if (expressionLine.getType() == SyntacticType.VOID) {
+            expressionLine.setType(simpleExpr.getType());
+        } else if (expressionLine.getType() == simpleExpr.getType() && simpleExpr.getType() == SyntacticType.BOOL) {
+            expression.setType(SyntacticType.BOOL);
+        } else {
+            expression.setType(SyntacticType.ERROR);
+        }
         return expression;
     }
 
-    private void expressionLine() {
+    private Node expressionLine() {
+        Node expressionLine = new Node(SyntacticType.VOID);
         if (isToken(KeyWorld.AND, KeyWorld.OR)) {
             logOp();
-            simpleExpr();
-            expressionLine();
+            final Node simpleExpr = simpleExpr();
+            final Node expressionLineFilho = expressionLine();
+            if (expressionLineFilho.getType() == SyntacticType.VOID && simpleExpr.getType() == SyntacticType.BOOL) {
+                expressionLine.setType(SyntacticType.BOOL);
+            } else if (expressionLineFilho.getType() == simpleExpr.getType() && simpleExpr.getType() == SyntacticType.BOOL) {
+                expressionLine.setType(SyntacticType.BOOL);
+            } else {
+                expressionLine.setType(SyntacticType.ERROR);
+            }
         }
+        return expressionLine;
     }
 
     private void logOp() {
