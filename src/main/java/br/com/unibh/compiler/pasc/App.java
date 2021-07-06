@@ -45,15 +45,15 @@ public class App {
                 log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG008") + MARKED_STRING);
                 final Consumer<Token> showToken = App::showToken;
 //                syntacticService.andThen(App::showToken)
-                lexicalService.process(inputStream, showToken.andThen(tokens::add));
+                lexicalService.process(inputStream, tokens::add);
+                RecursiveSyntactic recursiveSyntactic = new RecursiveSyntactic(tokens, lexicalService.getSymbolTable(), App::showToken);
+                recursiveSyntactic.analyse();
             } finally {
                 log.warning(MARKED_STRING + LanguageLexer.getInstance().message("MSG009") + MARKED_STRING);
                 lexicalService.getSymbolTable()
                         .stream()
                         .forEach(o -> log.info(String.format("%s -> %s", o.getLeft(), o.getRight())));
             }
-            RecursiveSyntactic recursiveSyntactic = new RecursiveSyntactic(tokens, lexicalService.getSymbolTable());
-            recursiveSyntactic.analyse();
         } else {
             log.severe(LanguageLexer.getInstance().message("MSG004"));
         }

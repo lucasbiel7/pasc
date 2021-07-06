@@ -11,25 +11,38 @@ import br.com.unibh.compiler.pasc.lexic.model.TokenError;
 import br.com.unibh.compiler.pasc.lexic.model.TokenName;
 import br.com.unibh.compiler.pasc.syntactic.model.Node;
 import br.com.unibh.compiler.pasc.syntactic.model.SyntacticType;
+import lombok.extern.java.Log;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.function.Consumer;
 
+@Log
 public class RecursiveSyntactic {
 
+
+    public static final int MAX_ERRO_SINTATICO = 5;
+    public static final int MAX_ERRO_SEMANTICO = 5;
+
     private Queue<Token> tokens;
+
+    int erroSintatico = 0;
+    int erroSemantico = 0;
 
     private Token tokenAtual;
 
     private SymbolTable symbolTable;
 
+    private Consumer<Token> message;
 
-    public RecursiveSyntactic(Queue<Token> tokens, SymbolTable symbolTable) {
+
+    public RecursiveSyntactic(Queue<Token> tokens, SymbolTable symbolTable, Consumer<Token> message) {
         this.tokens = tokens;
         this.symbolTable = symbolTable;
+        this.message = message;
     }
 
     public void analyse() {
@@ -353,17 +366,24 @@ public class RecursiveSyntactic {
         return typeNode;
     }
 
-    //TODO melhorar tratamento de exceção
     private void erroSyntactical(String mensagem) {
-        throw new RuntimeException(MessageFormat.format("[{0},{1}] Erro análise sintática: {2}",
+        erroSintatico++;
+        log.severe(MessageFormat.format("[{0},{1}] Erro análise sintática: {2}",
                 tokenAtual.getLine(), tokenAtual.getColumn(), mensagem)
         );
+        if (erroSintatico > MAX_ERRO_SINTATICO) {
+            throw new RuntimeException("A analise foi interrompida devido ao número máximo de erros sintáticos");
+        }
     }
 
     private void erroSemantic(String mensagem) {
-        throw new RuntimeException(MessageFormat.format("[{0},{1}] Erro análise semântica: {2}",
+        erroSemantico++;
+        log.severe(MessageFormat.format("[{0},{1}] Erro análise semântica: {2}",
                 tokenAtual.getLine(), tokenAtual.getColumn(), mensagem)
         );
+        if (erroSemantico > MAX_ERRO_SEMANTICO) {
+            throw new RuntimeException("A analise foi interrompida devido ao número máximo de erros semânticos");
+        }
     }
 
     private void consume(TokenName tokenName) {
@@ -420,6 +440,7 @@ public class RecursiveSyntactic {
 
     private void nextToken() {
         tokenAtual = tokens.poll();
+        message.accept(tokenAtual);
         //skip tokens de erro lexico
         if (tokenAtual instanceof TokenError) {
             nextToken();

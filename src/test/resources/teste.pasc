@@ -20,7 +20,6 @@ program P1
    y = Z;
    x = 10.123 * y;
    k = "g";
-
    if(y * 10 <= 100 and x / y >= 10) {
       write "C#n4a.m@luca qu& d1z SIM!";
    }
