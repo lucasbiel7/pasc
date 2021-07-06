@@ -25,12 +25,6 @@ public class RecursiveSyntactic {
     private Token tokenAtual;
 
     private SymbolTable symbolTable;
-    /**
-     * Nós para controlar as avaliações semanticas
-     */
-    private Node idList;
-    private Node simpleExpression;
-    private Node expression;
 
 
     public RecursiveSyntactic(Queue<Token> tokens, SymbolTable symbolTable) {
@@ -110,10 +104,11 @@ public class RecursiveSyntactic {
         ifStmtLinha();
     }
 
-    private void expressionInParenteses() {
+    private Node expressionInParenteses() {
         consume(Symbols.SMB_OPA);
-        expression();
+        final Node expression = expression();
         consume(Symbols.SMB_CPA);
+        return expression;
     }
 
     private void blockCode() {
@@ -130,9 +125,11 @@ public class RecursiveSyntactic {
         //segue o baile, transicao em vazio
     }
 
-    private void expression() {
+    private Node expression() {
+        Node expression = new Node();
         simpleExpr();
         expressionLine();
+        return expression;
     }
 
     private void expressionLine() {
@@ -152,27 +149,51 @@ public class RecursiveSyntactic {
     private void assignStmt() {
         final SyntacticType typeIdentifier = consumeWithValidateTableSymbol(Constants.IDENTIFIER);
         consume(Operators.OP_ATRIB);
-        simpleExpr();
-        if (typeIdentifier != simpleExpression.getType()) {
-            erroSemantic("Atribuição incompatível");
+        final Node simpleExpr = simpleExpr();
+        if (typeIdentifier != simpleExpr.getType()) {
+            erroSemantic(MessageFormat.format("Atribuição incompatível tipo do identificador {0}, expressão {1}",
+                    typeIdentifier,
+                    simpleExpr.getType()
+            ));
         }
     }
 
-
-    //TODO precisa retorna o tipo.
-    private void simpleExpr() {
-        term();
-        simpleExprLine();
+    private Node simpleExpr() {
+        Node simpleExpr = new Node();
+        final Node term = term();
+        final Node simpleExprLine = simpleExprLine();
+        if (simpleExprLine.getType() == SyntacticType.VOID) {
+            simpleExpr.setType(term.getType());
+        } else if (simpleExprLine.getType() == term.getType() && simpleExprLine.getType() == SyntacticType.NUM) {
+            simpleExpr.setType(SyntacticType.BOOL);
+        } else {
+            simpleExpr.setType(SyntacticType.ERROR);
+        }
+        return simpleExpr;
     }
 
-    private void simpleExprLine() {
+    private Node simpleExprLine() {
+        Node simpleExprLine = new Node(SyntacticType.VOID);
         if (isToken(Operators.OP_EQ, Operators.OP_GT, Operators.OP_GE, Operators.OP_LT, Operators.OP_LE, Operators.OP_NE)) {
             relop();
-            term();
-            simpleExprLine();
+            final Node term = term();
+            final Node simpleExprLineFilho = simpleExprLine();
+            evaluateTypeExpressionWithRecursive(simpleExprLine, term, simpleExprLineFilho);
         }
+        return simpleExprLine;
         // segue o baile, transicao em vazio
     }
+
+    public void evaluateTypeExpressionWithRecursive(Node actualNode, Node primaryTerm, Node recursiveNode) {
+        if (recursiveNode.getType() == SyntacticType.VOID && primaryTerm.getType() == SyntacticType.NUM) {
+            actualNode.setType(SyntacticType.NUM);
+        } else if (recursiveNode.getType() == primaryTerm.getType() && primaryTerm.getType() == SyntacticType.NUM) {
+            actualNode.setType(SyntacticType.NUM);
+        } else {
+            actualNode.setType(SyntacticType.ERROR);
+        }
+    }
+
 
     private void relop() {
         consume("Operadores inválidos",
@@ -186,17 +207,29 @@ public class RecursiveSyntactic {
     }
 
 
-    private void term() {
-        factorB();
-        termLine();
+    private Node term() {
+        Node term = new Node();
+        final Node factorB = factorB();
+        final Node termLine = termLine();
+        if (termLine.getType() == SyntacticType.VOID) {
+            term.setType(factorB.getType());
+        } else if (termLine.getType() == factorB.getType() && termLine.getType() == SyntacticType.NUM) {
+            term.setType(SyntacticType.NUM);
+        } else {
+            term.setType(SyntacticType.ERROR);
+        }
+        return term;
     }
 
-    private void termLine() {
+    private Node termLine() {
+        Node termLine = new Node(SyntacticType.VOID);
         if (isToken(Operators.OP_AD, Operators.OP_MIN)) {
             addOp();
-            factorB();
-            termLine();
+            final Node factorB = factorB();
+            final Node termLineFilho = termLine();
+            evaluateTypeExpressionWithRecursive(termLine, factorB, termLineFilho);
         }
+        return termLine;
     }
 
     private void addOp() {
@@ -206,17 +239,29 @@ public class RecursiveSyntactic {
         );
     }
 
-    private void factorB() {
-        factorA();
-        factorBLine();
+    private Node factorB() {
+        Node factorB = new Node();
+        final Node factorA = factorA();
+        final Node factorBLine = factorBLine();
+        if (factorBLine.getType() == SyntacticType.VOID) {
+            factorB.setType(factorA.getType());
+        } else if (factorBLine.getType() == factorA.getType() && factorBLine.getType() == SyntacticType.NUM) {
+            factorB.setType(SyntacticType.NUM);
+        } else {
+            factorB.setType(SyntacticType.ERROR);
+        }
+        return factorB;
     }
 
-    private void factorBLine() {
+    private Node factorBLine() {
+        Node factorBLine = new Node(SyntacticType.VOID);
         if (isToken(Operators.OP_MUL, Operators.OP_DIV)) {
             mulop();
-            factorA();
-            factorBLine();
+            final Node factorA = factorA();
+            final Node factorBLineFilho = factorBLine();
+            evaluateTypeExpressionWithRecursive(factorBLine, factorA, factorBLineFilho);
         }
+        return factorBLine;
     }
 
     private void mulop() {
@@ -226,30 +271,46 @@ public class RecursiveSyntactic {
         );
     }
 
-    private void factorA() {
+    private Node factorA() {
+        Node factorA = new Node();
         if (isToken(KeyWorld.NOT)) {
             consume(KeyWorld.NOT);
+            final Node factor = factor();
+            if (factor.getType() != SyntacticType.BOOL) {
+                factorA.setType(SyntacticType.ERROR);
+            } else {
+                factorA.setType(SyntacticType.BOOL);
+            }
+        } else {
+            final Node factor = factor();
+            factorA.setType(factor.getType());
         }
-        factor();
+        return factorA;
     }
 
-    private void factor() {
+    private Node factor() {
+        Node factor = new Node();
         if (isToken(Constants.IDENTIFIER)) {
-            consume(Constants.IDENTIFIER);
+            final SyntacticType syntacticType = consumeWithValidateTableSymbol(Constants.IDENTIFIER);
+            factor.setType(syntacticType);
         } else if (isToken(Symbols.SMB_OPA)) {
-            expressionInParenteses();
+            final Node expression = expressionInParenteses();
+            factor.setType(expression.getType());
         } else if (isToken(Constants.NUM_CONST, Constants.CHAR_CONST)) {
-            constant();
+            factor.setType(constant());
         } else {
             erroSyntactical("Fator inválido!");
         }
+        return factor;
     }
 
-    private void constant() {
+    private SyntacticType constant() {
+        SyntacticType type = isToken(Constants.NUM_CONST) ? SyntacticType.NUM : SyntacticType.CHAR;
         consume("Constante era esperada",
                 Constants.NUM_CONST,
                 Constants.CHAR_CONST
         );
+        return type;
     }
 
     private void declList() {
@@ -262,33 +323,34 @@ public class RecursiveSyntactic {
     }
 
     private void decl() {
-        type();
-        idList();
+        idList(type());
     }
 
-    private void idList() {
-        consume(Constants.IDENTIFIER, idList.getType());
-        idListLinha();
+    private void idList(Node type) {
+        consume(Constants.IDENTIFIER, type.getType());
+        idListLinha(type);
     }
 
-    private void idListLinha() {
+    private void idListLinha(Node type) {
         if (isToken(Symbols.SMB_COM)) {
             consume(Symbols.SMB_COM);
-            idList();
+            idList(type);
         }
         // Segue o baile, transição em vazio
     }
 
-    private void type() {
+    private Node type() {
+        Node typeNode = new Node();
         if (isToken(KeyWorld.NUM)) {
+            typeNode.setType(SyntacticType.NUM);
             consume(KeyWorld.NUM);
-            idList = new Node(SyntacticType.NUM);
         } else if (isToken(KeyWorld.CHAR)) {
+            typeNode.setType(SyntacticType.CHAR);
             consume(KeyWorld.CHAR);
-            idList = new Node(SyntacticType.CHAR);
         } else {
             erroSyntactical(MessageFormat.format("O token {0} não é um tipo válido", tokenAtual.getValue()));
         }
+        return typeNode;
     }
 
     //TODO melhorar tratamento de exceção
@@ -306,10 +368,17 @@ public class RecursiveSyntactic {
 
     private void consume(TokenName tokenName) {
         if (!isToken(tokenName)) {
+            String defaultValue;
+            try {
+                defaultValue = tokenName.getValue();
+            } catch (Exception e) {
+                defaultValue = "";
+            }
             erroSyntactical(MessageFormat.format(
-                    "token esperado {0} = {1}",
+                    "Token esperado: {0} token lido: {1}",
                     tokenName.getTokenName(),
-                    tokenName.getValue()));
+                    tokenAtual.getName()
+            ));
         }
         nextToken();
     }
